@@ -26,21 +26,21 @@ jobs:
         with:
           node-version: 20
 
-      - name: Run Sync Script
+      - name: Run Sync Script & Generate SVGs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node .github/scripts/update-readme.mjs
 
-      - name: Commit and Push README Changes
+      - name: Commit and Push Assets & README
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md
+          git add README.md pins/
 
           if git diff --staged --quiet; then
-            echo "README.md 无内容变更，跳过提交。"
+            echo "README and SVG pins are up to date."
           else
-            git commit -m "chore(profile): sync categorized repo matrix [skip ci]"
+            git commit -m "chore(profile): sync categorized pin cards [skip ci]"
             git push
           fi
 
