@@ -75,7 +75,6 @@ function generateCardSvg(repo) {
   const line2 = escapeXml(lines[1] || '');
 
   // 底部元素统一以 y=82 为基准行
-  // 16x16 图标的几何中心位于 y=8，12px 文字在 y=12.5 基线下字形几何中心同样为 y=8.25，两端绝对平齐
   let footerItems = '';
   let currentX = 16;
 
@@ -90,7 +89,7 @@ function generateCardSvg(repo) {
     currentX += 16 + langWidth + 16;
   }
 
-  // 2. Stars (GitHub Primer Octicon Outline)
+  // 2. Stars
   const starText = String(stars);
   const starWidth = Math.round(starText.length * 7.5);
   footerItems += `
@@ -102,12 +101,12 @@ function generateCardSvg(repo) {
   </g>`;
   currentX += 20 + starWidth + 16;
 
-  // 3. Forks (GitHub Primer Octicon repo-forked)
+  // 3. Forks (已完全修复三圆心绝对同心的 repo-forked 矢量)
   const forkText = String(forks);
   footerItems += `
   <g transform="translate(${currentX}, 0)">
     <svg x="0" y="0" width="16" height="16" viewBox="0 0 16 16" fill="#7d8590">
-      <path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V10.5h-1.5A2.25 2.25 0 0 1 3.5 8.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"/>
+      <path fill-rule="evenodd" d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm7.5 0a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0ZM8.75 12.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z"/>
     </svg>
     <text x="20" y="12.5" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#8b949e">${forkText}</text>
   </g>`;
@@ -118,7 +117,7 @@ function generateCardSvg(repo) {
   <!-- Repo Icon -->
   <g transform="translate(16, 16)">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="#7d8590">
-      <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 0 1 1-1ZM5 12.25v3.25a.25.25 0 0 0 .4.2l1.45-1.087a.25.25 0 0 1 .3 0L8.6 15.7a.25.25 0 0 0 .4-.2v-3.25a.25.25 0 0 0-.25-.25h-3.5a.25.25 0 0 0-.25.25Z"/>
+      <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 1 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 0 1 1-1ZM5 12.25v3.25a.25.25 0 0 0 .4.2l1.45-1.087a.25.25 0 0 1 .3 0L8.6 15.7a.25.25 0 0 0 .4-.2v-3.25a.25.25 0 0 0-.25-.25h-3.5a.25.25 0 0 0-.25.25Z"/>
     </svg>
   </g>
   
@@ -185,7 +184,6 @@ async function run() {
           const repoData = { ...matched, customDesc };
           const svgContent = generateCardSvg(repoData);
 
-          // 核心：计算内容哈希并写入独立 SVG
           const hash = crypto.createHash('md5').update(svgContent).digest('hex').slice(0, 8);
           await fs.writeFile(path.join(PINS_DIR, `${matched.name}.svg`), svgContent, 'utf-8');
 
@@ -196,7 +194,6 @@ async function run() {
       if (catRepos.length > 0) {
         generatedMarkdown += `#### ${cat.name}\n\n<p align="left">\n`;
         for (const item of catRepos) {
-          // 在 URL 后拼接内容哈希，彻底穿透 GitHub Camo 缓存
           generatedMarkdown += `  <a href="${item.html_url}"><img src="./pins/${item.name}.svg?v=${item.hash}" alt="${item.name}" width="390" /></a>\n`;
         }
         generatedMarkdown += `</p>\n\n`;
@@ -217,7 +214,7 @@ async function run() {
       readme.slice(endIndex);
 
     await fs.writeFile(README_PATH, updatedReadme, 'utf-8');
-    console.log(`[Success] Cards and README synchronized with cache-busting hashes.`);
+    console.log(`[Success] Fork icon concentric alignment calibrated and pushed.`);
   } catch (err) {
     console.error('[Error]', err);
     process.exit(1);
