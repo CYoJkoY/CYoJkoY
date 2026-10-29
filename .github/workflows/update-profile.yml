@@ -1,0 +1,39 @@
+name: Sync Repos to Profile README
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # 每天 UTC 00:00 (北京时间 08:00) 自动触发
+  workflow_dispatch:   # 允许在网页控制台手动一键执行
+
+permissions:
+  contents: write
+
+jobs:
+  sync-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Sync Script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node .github/scripts/update-readme.mjs
+
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+
+          if git diff --staged --quiet; then
+            echo "README.md 无内容变更，跳过提交。"
+          else
+            git commit -m "chore(profile): auto-sync repositories [skip ci]"
+            git push
+          fi
