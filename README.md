@@ -27,34 +27,34 @@
 #### Desktop & System Infrastructure
 
 <p align="left">
-  <a href="https://github.com/CYoJkoY/CapsLock-"><img src="./pins/CapsLock-.svg?v=ae929bdc" alt="CapsLock-" width="390" /></a>
-  <a href="https://github.com/CYoJkoY/extras-"><img src="./pins/extras-.svg?v=43c80e5d" alt="extras-" width="390" /></a>
-  <a href="https://github.com/CYoJkoY/Yoko-Windhawk-Mods"><img src="./pins/Yoko-Windhawk-Mods.svg?v=7dca8391" alt="Yoko-Windhawk-Mods" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/CapsLock-"><img src="./pins/CapsLock-.svg?v=9beb30db" alt="CapsLock-" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/extras-"><img src="./pins/extras-.svg?v=f91a335e" alt="extras-" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Yoko-Windhawk-Mods"><img src="./pins/Yoko-Windhawk-Mods.svg?v=bd9b6371" alt="Yoko-Windhawk-Mods" width="390" /></a>
 </p>
 
 #### Web Extensions & Developer Tools
 
 <p align="left">
-  <a href="https://github.com/CYoJkoY/AiGithubIngest"><img src="./pins/AiGithubIngest.svg?v=08bd1b68" alt="AiGithubIngest" width="390" /></a>
-  <a href="https://github.com/CYoJkoY/ChromiumCloudSync"><img src="./pins/ChromiumCloudSync.svg?v=89c1d415" alt="ChromiumCloudSync" width="390" /></a>
-  <a href="https://github.com/CYoJkoY/Neo-Godot-Tools"><img src="./pins/Neo-Godot-Tools.svg?v=3f00d689" alt="Neo-Godot-Tools" width="390" /></a>
-  <a href="https://github.com/CYoJkoY/Yoko-ScriptCat-Scripts"><img src="./pins/Yoko-ScriptCat-Scripts.svg?v=905b160a" alt="Yoko-ScriptCat-Scripts" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/AiGithubIngest"><img src="./pins/AiGithubIngest.svg?v=cd3b2bc0" alt="AiGithubIngest" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/ChromiumCloudSync"><img src="./pins/ChromiumCloudSync.svg?v=a6391ecb" alt="ChromiumCloudSync" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Neo-Godot-Tools"><img src="./pins/Neo-Godot-Tools.svg?v=56d1a59c" alt="Neo-Godot-Tools" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Yoko-ScriptCat-Scripts"><img src="./pins/Yoko-ScriptCat-Scripts.svg?v=3823bca5" alt="Yoko-ScriptCat-Scripts" width="390" /></a>
 </p>
 
 #### Modding & Game Ecosystem
 
 <p align="left">
-  <a href="https://github.com/CYoJkoY/Yoko-YzTato"><img src="./pins/Yoko-YzTato.svg?v=2c74908e" alt="Yoko-YzTato" width="390" /></a>
-  <a href="https://github.com/CYoJkoY/Yoko-NewContentLoader"><img src="./pins/Yoko-NewContentLoader.svg?v=9a2810c9" alt="Yoko-NewContentLoader" width="390" /></a>
-  <a href="https://github.com/CYoJkoY/Yoko-MoreStatsContainer"><img src="./pins/Yoko-MoreStatsContainer.svg?v=47e9ca88" alt="Yoko-MoreStatsContainer" width="390" /></a>
-  <a href="https://github.com/CYoJkoY/Yoko-Fantasy"><img src="./pins/Yoko-Fantasy.svg?v=bcbc1fee" alt="Yoko-Fantasy" width="390" /></a>
-  <a href="https://github.com/CYoJkoY/Yoko-DebugMenu"><img src="./pins/Yoko-DebugMenu.svg?v=219501b2" alt="Yoko-DebugMenu" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Yoko-YzTato"><img src="./pins/Yoko-YzTato.svg?v=e6bc2ab8" alt="Yoko-YzTato" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Yoko-NewContentLoader"><img src="./pins/Yoko-NewContentLoader.svg?v=63f572e5" alt="Yoko-NewContentLoader" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Yoko-MoreStatsContainer"><img src="./pins/Yoko-MoreStatsContainer.svg?v=7b22f13d" alt="Yoko-MoreStatsContainer" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Yoko-Fantasy"><img src="./pins/Yoko-Fantasy.svg?v=da7b917c" alt="Yoko-Fantasy" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Yoko-DebugMenu"><img src="./pins/Yoko-DebugMenu.svg?v=9f5f77dc" alt="Yoko-DebugMenu" width="390" /></a>
 </p>
 
 #### Standards & Architecture
 
 <p align="left">
-  <a href="https://github.com/CYoJkoY/AzSkills"><img src="./pins/AzSkills.svg?v=baf524e1" alt="AzSkills" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/AzSkills"><img src="./pins/AzSkills.svg?v=2fccab7d" alt="AzSkills" width="390" /></a>
 </p>
 
 <!-- REPO_LIST:END -->
