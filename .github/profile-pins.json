@@ -1,0 +1,39 @@
+{
+  "categories": [
+    {
+      "name": "🛠️ System & Desktop",
+      "repos": [
+        "CapsLock-",
+        "extras-",
+        "Yoko-Windhawk-Mods"
+      ]
+    },
+    {
+      "name": "🌐 Web Extensions & Toolchains",
+      "repos": [
+        "AiGithubIngest",
+        "ChromiumCloudSync",
+        "Yoko-ScriptCat-Scripts"
+      ]
+    },
+    {
+      "name": "🥔 Brotato Dev & Modding",
+      "repos": [
+        "Neo-Godot-Tools",
+        "Yoko-YzTato",
+        "Yoko-NewContentLoader",
+        "Yoko-MoreStatsContainer",
+        "Yoko-Fantasy",
+        "Yoko-DebugMenu",
+        "Yoko-Optimize"
+      ]
+    },
+    {
+      "name": "📐 Standards & Specs",
+      "repos": [
+        "AzSkills"
+      ]
+    }
+  ],
+  "showUncategorizedInDrawer": true
+}
