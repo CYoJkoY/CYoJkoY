@@ -56,8 +56,7 @@
 ### 📊 Activity & Metrics
 
 <p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=CYoJkoY&show_icons=true&theme=tokyonight&hide_border=true&include_all_commits=true&count_private=true" height="145" alt="GitHub Stats" />
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=CYoJkoY&layout=compact&theme=tokyonight&hide_border=true" height="145" alt="Top Languages" />
+  <img src="https://raw.githubusercontent.com/CYoJkoY/CYoJkoY/output/github-contribution-grid-snake-dark.svg" alt="GitHub Contribution Snake" />
 </p>
 
 ---
