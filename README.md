@@ -14,3 +14,9 @@ Here are some ideas to get you started:
 - 😄 Pronouns: ...
 - ⚡ Fun fact: ...
 -->
+
+### 🛠️ 开源工程与代表作 (自动同步)
+
+<!-- REPO_LIST:START -->
+<!-- 此区域内容由 GitHub Actions 定时覆写，请勿手动编辑 -->
+<!-- REPO_LIST:END -->
