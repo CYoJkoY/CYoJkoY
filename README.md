@@ -61,36 +61,7 @@
 | :--- | :---: | :--- | :---: |
 | [**AzSkills**](https://github.com/CYoJkoY/AzSkills) | `JavaScript` | A modular collection of reusable AI skills for development, translation, localization, documentation, and automation. | ⭐ 1 |
 
-<details>
-<summary><b>📦 更多活跃组件与实验项目 (共 3 个)</b></summary>
-<br>
-
-| 项目 | 技术栈 | 描述 | Stars |
-| :--- | :---: | :--- | :---: |
-| [**BrotatoVersions**](https://github.com/CYoJkoY/BrotatoVersions) | `GDScript` | 暂无描述 | - |
-| [**ColorPalette**](https://github.com/CYoJkoY/ColorPalette) | `TypeScript` | 暂无描述 | - |
-| [**Payment**](https://github.com/CYoJkoY/Payment) | `CSS` | 暂无描述 | - |
-
-</details>
 <!-- REPO_LIST:END -->
-
----
-
-### 📐 规范与基建体系 (Standards & Infrastructure)
-
-<details>
-<summary><b>展开查看工程规范与环境管理架构</b></summary>
-<br>
-
-| 体系 / 规范 | 核心目标 | 落地实现 |
-| :--- | :--- | :--- |
-| **AzSkills** | 软件工程协议规范、设计系统令牌与自动化 Agent 行为约束 | `Contracts & Specs` |
-| **Custom Scoop Bucket** | 采用 NTFS Junction 隔离数据与应用实体的轻量化便携软件源 | `Package Manifests` |
-| **Engineering Contract** | 基于 Issue 驱动、语义化 Commit 校验与 PR 严格审查闭环 | `CI/CD Automation` |
-
-</details>
-
----
 
 ### 📊 研发动态与指标 (Activity & Metrics)
 
