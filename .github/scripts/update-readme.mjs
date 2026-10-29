@@ -20,12 +20,12 @@ async function fetchAllRepos() {
   });
 
   if (!response.ok) {
-    throw new Error(`GitHub API 请求失败: ${response.status} ${response.statusText}`);
+    throw new Error(`GitHub API request failed: ${response.status} ${response.statusText}`);
   }
 
   const repos = await response.json();
 
-  // 严格过滤：排除 Fork、私有仓库、同名 Profile 仓库，以及已归档（Public Archive）项目
+  // Exclude forks, private repositories, the profile repository itself, and archived projects
   return repos.filter(
     (repo) =>
       !repo.fork &&
@@ -36,13 +36,13 @@ async function fetchAllRepos() {
 }
 
 function renderTable(repoList) {
-  let md = '\n| 项目 | 技术栈 | 描述 | Stars |\n';
+  let md = '\n| Project | Tech Stack | Description | Stars |\n';
   md += '| :--- | :---: | :--- | :---: |\n';
 
   for (const item of repoList) {
     const name = `[**${item.name}**](${item.html_url})`;
     const lang = item.language ? `\`${item.language}\`` : '-';
-    const desc = (item.customDesc || item.description || '暂无描述').replace(/\|/g, '\\|');
+    const desc = (item.customDesc || item.description || 'No description provided').replace(/\|/g, '\\|');
     const stars = item.stargazers_count > 0 ? `⭐ ${item.stargazers_count}` : '-';
 
     md += `| ${name} | ${lang} | ${desc} | ${stars} |\n`;
@@ -55,14 +55,13 @@ async function run() {
     const repos = await fetchAllRepos();
     const repoMap = new Map(repos.map((r) => [r.name.toLowerCase(), r]));
 
-    // 读取分类配置
     const rawConfig = await fs.readFile(CONFIG_PATH, 'utf-8');
     const config = JSON.parse(rawConfig);
 
     const usedRepoNames = new Set();
     let generatedMarkdown = '\n';
 
-    // 1. 按配置顺序渲染各分类表格
+    // 1. Render categorized tables
     for (const cat of config.categories || []) {
       const catRepos = [];
 
@@ -71,7 +70,6 @@ async function run() {
         const customDesc = typeof entry === 'object' ? entry.desc : null;
         const matched = repoMap.get(repoName.toLowerCase());
 
-        // 仅添加存在且未归档的公开仓库
         if (matched) {
           catRepos.push({ ...matched, customDesc });
           usedRepoNames.add(repoName.toLowerCase());
@@ -84,25 +82,25 @@ async function run() {
       }
     }
 
-    // 2. 将未分类的其他活跃公开项目收纳进折叠抽屉
+    // 2. Render uncategorized active projects in a collapsible drawer
     if (config.showUncategorizedInDrawer) {
       const remainingRepos = repos.filter((r) => !usedRepoNames.has(r.name.toLowerCase()));
       if (remainingRepos.length > 0) {
         remainingRepos.sort((a, b) => b.stargazers_count - a.stargazers_count);
         generatedMarkdown += '<details>\n';
-        generatedMarkdown += `<summary><b>📦 更多活跃组件与实验项目 (共 ${remainingRepos.length} 个)</b></summary>\n<br>\n`;
+        generatedMarkdown += `<summary><b>📦 Additional Active Projects (${remainingRepos.length})</b></summary>\n<br>\n`;
         generatedMarkdown += renderTable(remainingRepos);
         generatedMarkdown += '\n</details>\n';
       }
     }
 
-    // 3. 回写 README
+    // 3. Write back to README.md
     const readme = await fs.readFile(README_PATH, 'utf-8');
     const startIndex = readme.indexOf(START_MARKER);
     const endIndex = readme.indexOf(END_MARKER);
 
     if (startIndex === -1 || endIndex === -1 || startIndex >= endIndex) {
-      throw new Error(`未在 README.md 中找到有效的注释标记: ${START_MARKER} ... ${END_MARKER}`);
+      throw new Error(`Markers not found: ${START_MARKER} ... ${END_MARKER}`);
     }
 
     const updatedReadme =
@@ -111,9 +109,9 @@ async function run() {
       readme.slice(endIndex);
 
     await fs.writeFile(README_PATH, updatedReadme, 'utf-8');
-    console.log(`[成功] 分类矩阵已更新至 README.md`);
+    console.log(`[Success] Categorized matrix synced to README.md`);
   } catch (err) {
-    console.error('[失败]', err);
+    console.error('[Error]', err);
     process.exit(1);
   }
 }

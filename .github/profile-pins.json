@@ -1,35 +1,67 @@
 {
   "categories": [
     {
-      "name": "🛠️ System & Desktop",
+      "name": "🛠️ Systems & Desktop Architecture",
       "repos": [
         "CapsLock-",
-        "extras-",
-        "Yoko-Windhawk-Mods"
+        {
+          "name": "extras-",
+          "desc": "Curated Scoop bucket providing niche, portable, and custom-packaged applications."
+        },
+        {
+          "name": "Yoko-Windhawk-Mods",
+          "desc": "Collection of native Windhawk modules for Windows shell customization."
+        },
+        "CthulhuCursor",
+        {
+          "name": "GothicSigilCursor",
+          "desc": "Custom gothic sigil cursor assets and styling presets for Windows."
+        }
       ]
     },
     {
-      "name": "🌐 Web Extensions & Toolchains",
+      "name": "🌐 Web Extensions & Developer Toolchains",
       "repos": [
         "AiGithubIngest",
         "ChromiumCloudSync",
-        "Yoko-ScriptCat-Scripts"
+        {
+          "name": "Yoko-ScriptCat-Scripts",
+          "desc": "Modular ScriptCat userscripts for client-side automation and enhancements."
+        }
       ]
     },
     {
-      "name": "🥔 Brotato Dev & Modding",
+      "name": "🎮 Game Development & Modding",
       "repos": [
         "Neo-Godot-Tools",
-        "Yoko-YzTato",
-        "Yoko-NewContentLoader",
-        "Yoko-MoreStatsContainer",
-        "Yoko-Fantasy",
-        "Yoko-DebugMenu",
-        "Yoko-Optimize"
+        {
+          "name": "Yoko-YzTato",
+          "desc": "Custom Brotato expansion mod featuring original mechanics, characters, and builds."
+        },
+        {
+          "name": "Yoko-NewContentLoader",
+          "desc": "Dynamic mod content injector and runtime asset loader."
+        },
+        {
+          "name": "Yoko-MoreStatsContainer",
+          "desc": "UI container extension for real-time combat stats and diagnostics."
+        },
+        {
+          "name": "Yoko-Fantasy",
+          "desc": "Fantasy-themed overhaul and custom weapon mechanics for Brotato."
+        },
+        {
+          "name": "Yoko-DebugMenu",
+          "desc": "In-game diagnostic overlay and developer debug menu."
+        },
+        {
+          "name": "Yoko-Optimize",
+          "desc": "Performance optimization suite and stutter-reduction patches."
+        }
       ]
     },
     {
-      "name": "📐 Standards & Specs",
+      "name": "📐 Standards & Infrastructure",
       "repos": [
         "AzSkills"
       ]
