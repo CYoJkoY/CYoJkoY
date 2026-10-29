@@ -24,7 +24,39 @@
 ### 🛠️ Projects & Toolchains
 
 <!-- REPO_LIST:START -->
-<!-- Automatically generated via GitHub Actions. Do not edit manually. -->
+#### Desktop & System Infrastructure
+
+<p align="left">
+  <a href="https://github.com/CYoJkoY/CapsLock-"><img src="./pins/CapsLock-.svg" alt="CapsLock-" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/extras-"><img src="./pins/extras-.svg" alt="extras-" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Yoko-Windhawk-Mods"><img src="./pins/Yoko-Windhawk-Mods.svg" alt="Yoko-Windhawk-Mods" width="390" /></a>
+</p>
+
+#### Web Extensions & Developer Tools
+
+<p align="left">
+  <a href="https://github.com/CYoJkoY/AiGithubIngest"><img src="./pins/AiGithubIngest.svg" alt="AiGithubIngest" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/ChromiumCloudSync"><img src="./pins/ChromiumCloudSync.svg" alt="ChromiumCloudSync" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Neo-Godot-Tools"><img src="./pins/Neo-Godot-Tools.svg" alt="Neo-Godot-Tools" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Yoko-ScriptCat-Scripts"><img src="./pins/Yoko-ScriptCat-Scripts.svg" alt="Yoko-ScriptCat-Scripts" width="390" /></a>
+</p>
+
+#### Modding & Game Ecosystem
+
+<p align="left">
+  <a href="https://github.com/CYoJkoY/Yoko-YzTato"><img src="./pins/Yoko-YzTato.svg" alt="Yoko-YzTato" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Yoko-NewContentLoader"><img src="./pins/Yoko-NewContentLoader.svg" alt="Yoko-NewContentLoader" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Yoko-MoreStatsContainer"><img src="./pins/Yoko-MoreStatsContainer.svg" alt="Yoko-MoreStatsContainer" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Yoko-Fantasy"><img src="./pins/Yoko-Fantasy.svg" alt="Yoko-Fantasy" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Yoko-DebugMenu"><img src="./pins/Yoko-DebugMenu.svg" alt="Yoko-DebugMenu" width="390" /></a>
+</p>
+
+#### Standards & Architecture
+
+<p align="left">
+  <a href="https://github.com/CYoJkoY/AzSkills"><img src="./pins/AzSkills.svg" alt="AzSkills" width="390" /></a>
+</p>
+
 <!-- REPO_LIST:END -->
 
 ---
