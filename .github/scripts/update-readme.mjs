@@ -33,17 +33,18 @@ async function fetchAllRepos() {
   );
 }
 
-function renderAlignedTable(repoList) {
-  let md = '\n| Project | Tech Stack | Stars | Description |\n';
-  md += '| :--- | :---: | :---: | :--- |\n';
-
+function renderStreamCards(repoList) {
+  let md = '\n';
   for (const item of repoList) {
     const name = `[**${item.name}**](${item.html_url})`;
-    const lang = item.language ? `\`${item.language}\`` : '—';
-    const stars = item.stargazers_count > 0 ? `⭐ **${item.stargazers_count}**` : '—';
-    const desc = (item.customDesc || item.description || 'No description provided.').replace(/\|/g, '\\|');
+    const lang = item.language ? `\`${item.language}\`` : null;
+    const stars = item.stargazers_count > 0 ? `⭐ **${item.stargazers_count}**` : null;
+    const desc = item.customDesc || item.description || 'No description provided.';
 
-    md += `| ${name} | ${lang} | ${stars} | ${desc} |\n`;
+    const meta = [lang, stars].filter(Boolean).join(' · ');
+    const headerLine = meta ? `${name} &nbsp;·&nbsp; ${meta}` : name;
+
+    md += `- ${headerLine}\n  > ${desc}\n\n`;
   }
   return md;
 }
@@ -73,7 +74,7 @@ async function run() {
 
       if (catRepos.length > 0) {
         generatedMarkdown += `#### ${cat.name}\n`;
-        generatedMarkdown += renderAlignedTable(catRepos) + '\n';
+        generatedMarkdown += renderStreamCards(catRepos);
       }
     }
 
@@ -91,7 +92,7 @@ async function run() {
       readme.slice(endIndex);
 
     await fs.writeFile(README_PATH, updatedReadme, 'utf-8');
-    console.log(`[Success] Aligned matrix synced to README.md`);
+    console.log(`[Success] Stream cards synced to README.md`);
   } catch (err) {
     console.error('[Error]', err);
     process.exit(1);
