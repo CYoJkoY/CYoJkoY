@@ -24,7 +24,31 @@
 ### 🛠️ Projects & Toolchains
 
 <!-- REPO_LIST:START -->
-<!-- Automatically generated via GitHub Actions. Do not edit manually. -->
+#### Desktop & System Infrastructure
+
+- [**CapsLock-**](https://github.com/CYoJkoY/CapsLock-) `AutoHotkey` — Lightweight AutoHotkey v2 navigation shortcuts and window manager. *(★ 11)*
+- [**extras-**](https://github.com/CYoJkoY/extras-) `PowerShell` — Curated Scoop bucket providing niche, portable, and custom manifests. *(★ 1)*
+- [**Yoko-Windhawk-Mods**](https://github.com/CYoJkoY/Yoko-Windhawk-Mods) `C++` — Collection of native Windhawk modules for Windows shell customization. *(★ 1)*
+
+#### Web Extensions & Developer Tools
+
+- [**AiGithubIngest**](https://github.com/CYoJkoY/AiGithubIngest) `TypeScript` — Client-side extension mounting GitHub repositories directly into LLM chats. *(★ 1)*
+- [**ChromiumCloudSync**](https://github.com/CYoJkoY/ChromiumCloudSync) `TypeScript` — Lightweight Chromium sync for tabs, bookmarks, and extensions via Gist. *(★ 6)*
+- [**Neo-Godot-Tools**](https://github.com/CYoJkoY/Neo-Godot-Tools) `TypeScript` — VS Code enhancement suite for Godot 3 and 4 development. *(★ 5)*
+- [**Yoko-ScriptCat-Scripts**](https://github.com/CYoJkoY/Yoko-ScriptCat-Scripts) `JavaScript` — Modular ScriptCat userscripts for client-side automation. *(★ 1)*
+
+#### Modding & Game Ecosystem
+
+- [**Yoko-YzTato**](https://github.com/CYoJkoY/Yoko-YzTato) `GDScript` — Brotato expansion mod featuring custom mechanics, weapons, and builds.
+- [**Yoko-NewContentLoader**](https://github.com/CYoJkoY/Yoko-NewContentLoader) `GDScript` — Dynamic mod injector and runtime asset loader. *(★ 1)*
+- [**Yoko-MoreStatsContainer**](https://github.com/CYoJkoY/Yoko-MoreStatsContainer) `GDScript` — In-game real-time combat stats and diagnostics UI overlay.
+- [**Yoko-Fantasy**](https://github.com/CYoJkoY/Yoko-Fantasy) `GDScript` — Fantasy-themed overhaul and custom weapon mechanics.
+- [**Yoko-DebugMenu**](https://github.com/CYoJkoY/Yoko-DebugMenu) `GDScript` — Developer diagnostic overlay and runtime inspection menu.
+
+#### Standards & Architecture
+
+- [**AzSkills**](https://github.com/CYoJkoY/AzSkills) `JavaScript` — Modular AI agent skill specifications and engineering behavioral contracts. *(★ 1)*
+
 <!-- REPO_LIST:END -->
 
 ---
