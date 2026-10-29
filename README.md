@@ -25,91 +25,37 @@
 
 <!-- REPO_LIST:START -->
 #### Desktop & System Infrastructure
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <b><a href="https://github.com/CYoJkoY/CapsLock-">CapsLock-</a></b> &nbsp;<code>AutoHotkey</code> &nbsp;<sub>★ 11</sub><br/>
-      <sub>Lightweight AutoHotkey v2 navigation shortcuts and window manager.</sub>
-    </td>
-    <td width="50%" valign="top">
-      <b><a href="https://github.com/CYoJkoY/extras-">extras-</a></b> &nbsp;<code>PowerShell</code> &nbsp;<sub>★ 1</sub><br/>
-      <sub>Curated Scoop bucket providing niche, portable, and custom manifests.</sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <b><a href="https://github.com/CYoJkoY/Yoko-Windhawk-Mods">Yoko-Windhawk-Mods</a></b> &nbsp;<code>C++</code> &nbsp;<sub>★ 1</sub><br/>
-      <sub>Collection of native Windhawk modules for Windows shell customization.</sub>
-    </td>
-    <td width="50%" valign="top"></td>
-  </tr>
-</table>
+
+| Project | Tech Stack | Stars | Description |
+| :--- | :---: | :---: | :--- |
+| [**CapsLock-**](https://github.com/CYoJkoY/CapsLock-) | `AutoHotkey` | ⭐ **11** | Lightweight AutoHotkey v2 navigation shortcuts and window manager. |
+| [**extras-**](https://github.com/CYoJkoY/extras-) | `PowerShell` | ⭐ **1** | Curated Scoop bucket providing niche, portable, and custom manifests. |
+| [**Yoko-Windhawk-Mods**](https://github.com/CYoJkoY/Yoko-Windhawk-Mods) | `C++` | ⭐ **1** | Collection of native Windhawk modules for Windows shell customization. |
 
 #### Web Extensions & Developer Tools
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <b><a href="https://github.com/CYoJkoY/AiGithubIngest">AiGithubIngest</a></b> &nbsp;<code>TypeScript</code> &nbsp;<sub>★ 1</sub><br/>
-      <sub>Client-side extension mounting GitHub repositories directly into LLM chats.</sub>
-    </td>
-    <td width="50%" valign="top">
-      <b><a href="https://github.com/CYoJkoY/ChromiumCloudSync">ChromiumCloudSync</a></b> &nbsp;<code>TypeScript</code> &nbsp;<sub>★ 6</sub><br/>
-      <sub>Lightweight Chromium sync for tabs, bookmarks, and extensions via Gist.</sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <b><a href="https://github.com/CYoJkoY/Neo-Godot-Tools">Neo-Godot-Tools</a></b> &nbsp;<code>TypeScript</code> &nbsp;<sub>★ 5</sub><br/>
-      <sub>VS Code enhancement suite for Godot 3 and 4 development.</sub>
-    </td>
-    <td width="50%" valign="top">
-      <b><a href="https://github.com/CYoJkoY/Yoko-ScriptCat-Scripts">Yoko-ScriptCat-Scripts</a></b> &nbsp;<code>JavaScript</code> &nbsp;<sub>★ 1</sub><br/>
-      <sub>Modular ScriptCat userscripts for client-side automation.</sub>
-    </td>
-  </tr>
-</table>
+
+| Project | Tech Stack | Stars | Description |
+| :--- | :---: | :---: | :--- |
+| [**AiGithubIngest**](https://github.com/CYoJkoY/AiGithubIngest) | `TypeScript` | ⭐ **1** | Client-side extension mounting GitHub repositories directly into LLM chats. |
+| [**ChromiumCloudSync**](https://github.com/CYoJkoY/ChromiumCloudSync) | `TypeScript` | ⭐ **6** | Lightweight Chromium sync for tabs, bookmarks, and extensions via Gist. |
+| [**Neo-Godot-Tools**](https://github.com/CYoJkoY/Neo-Godot-Tools) | `TypeScript` | ⭐ **5** | VS Code enhancement suite for Godot 3 and 4 development. |
+| [**Yoko-ScriptCat-Scripts**](https://github.com/CYoJkoY/Yoko-ScriptCat-Scripts) | `JavaScript` | ⭐ **1** | Modular ScriptCat userscripts for client-side automation. |
 
 #### Modding & Game Ecosystem
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <b><a href="https://github.com/CYoJkoY/Yoko-YzTato">Yoko-YzTato</a></b> &nbsp;<code>GDScript</code><br/>
-      <sub>Brotato expansion mod featuring custom mechanics, weapons, and builds.</sub>
-    </td>
-    <td width="50%" valign="top">
-      <b><a href="https://github.com/CYoJkoY/Yoko-NewContentLoader">Yoko-NewContentLoader</a></b> &nbsp;<code>GDScript</code> &nbsp;<sub>★ 1</sub><br/>
-      <sub>Dynamic mod injector and runtime asset loader.</sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <b><a href="https://github.com/CYoJkoY/Yoko-MoreStatsContainer">Yoko-MoreStatsContainer</a></b> &nbsp;<code>GDScript</code><br/>
-      <sub>In-game real-time combat stats and diagnostics UI overlay.</sub>
-    </td>
-    <td width="50%" valign="top">
-      <b><a href="https://github.com/CYoJkoY/Yoko-Fantasy">Yoko-Fantasy</a></b> &nbsp;<code>GDScript</code><br/>
-      <sub>Fantasy-themed overhaul and custom weapon mechanics.</sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <b><a href="https://github.com/CYoJkoY/Yoko-DebugMenu">Yoko-DebugMenu</a></b> &nbsp;<code>GDScript</code><br/>
-      <sub>Developer diagnostic overlay and runtime inspection menu.</sub>
-    </td>
-    <td width="50%" valign="top"></td>
-  </tr>
-</table>
+
+| Project | Tech Stack | Stars | Description |
+| :--- | :---: | :---: | :--- |
+| [**Yoko-YzTato**](https://github.com/CYoJkoY/Yoko-YzTato) | `GDScript` | — | Brotato expansion mod featuring custom mechanics, weapons, and builds. |
+| [**Yoko-NewContentLoader**](https://github.com/CYoJkoY/Yoko-NewContentLoader) | `GDScript` | ⭐ **1** | Dynamic mod injector and runtime asset loader. |
+| [**Yoko-MoreStatsContainer**](https://github.com/CYoJkoY/Yoko-MoreStatsContainer) | `GDScript` | — | In-game real-time combat stats and diagnostics UI overlay. |
+| [**Yoko-Fantasy**](https://github.com/CYoJkoY/Yoko-Fantasy) | `GDScript` | — | Fantasy-themed overhaul and custom weapon mechanics. |
+| [**Yoko-DebugMenu**](https://github.com/CYoJkoY/Yoko-DebugMenu) | `GDScript` | — | Developer diagnostic overlay and runtime inspection menu. |
 
 #### Standards & Architecture
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <b><a href="https://github.com/CYoJkoY/AzSkills">AzSkills</a></b> &nbsp;<code>JavaScript</code> &nbsp;<sub>★ 1</sub><br/>
-      <sub>Modular AI agent skill specifications and engineering behavioral contracts.</sub>
-    </td>
-    <td width="50%" valign="top"></td>
-  </tr>
-</table>
+
+| Project | Tech Stack | Stars | Description |
+| :--- | :---: | :---: | :--- |
+| [**AzSkills**](https://github.com/CYoJkoY/AzSkills) | `JavaScript` | ⭐ **1** | Modular AI agent skill specifications and engineering behavioral contracts. |
 
 <!-- REPO_LIST:END -->
 
