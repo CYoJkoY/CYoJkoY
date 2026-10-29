@@ -33,17 +33,40 @@ async function fetchAllRepos() {
   );
 }
 
-function renderList(repoList) {
-  let md = '\n';
-  for (const item of repoList) {
-    const link = `[**${item.name}**](${item.html_url})`;
-    const lang = item.language ? `\`${item.language}\` ` : '';
-    const desc = item.customDesc || item.description || 'No description provided.';
-    const stars = item.stargazers_count > 0 ? ` *(★ ${item.stargazers_count})*` : '';
+function renderGrid(repoList) {
+  let html = '<table>\n';
+  
+  for (let i = 0; i < repoList.length; i += 2) {
+    const left = repoList[i];
+    const right = repoList[i + 1];
 
-    md += `- ${link} ${lang}— ${desc}${stars}\n`;
+    html += '  <tr>\n';
+
+    const leftStars = left.stargazers_count > 0 ? ` &nbsp;<sub>★ ${left.stargazers_count}</sub>` : '';
+    const leftLang = left.language ? ` &nbsp;<code>${left.language}</code>` : '';
+    const leftDesc = left.customDesc || left.description || 'No description provided.';
+    html += `    <td width="50%" valign="top">\n`;
+    html += `      <b><a href="${left.html_url}">${left.name}</a></b>${leftLang}${leftStars}<br/>\n`;
+    html += `      <sub>${leftDesc}</sub>\n`;
+    html += `    </td>\n`;
+
+    if (right) {
+      const rightStars = right.stargazers_count > 0 ? ` &nbsp;<sub>★ ${right.stargazers_count}</sub>` : '';
+      const rightLang = right.language ? ` &nbsp;<code>${right.language}</code>` : '';
+      const rightDesc = right.customDesc || right.description || 'No description provided.';
+      html += `    <td width="50%" valign="top">\n`;
+      html += `      <b><a href="${right.html_url}">${right.name}</a></b>${rightLang}${rightStars}<br/>\n`;
+      html += `      <sub>${rightDesc}</sub>\n`;
+      html += `    </td>\n`;
+    } else {
+      html += `    <td width="50%" valign="top"></td>\n`;
+    }
+
+    html += '  </tr>\n';
   }
-  return md;
+
+  html += '</table>\n';
+  return html;
 }
 
 async function run() {
@@ -71,7 +94,7 @@ async function run() {
 
       if (catRepos.length > 0) {
         generatedMarkdown += `#### ${cat.name}\n`;
-        generatedMarkdown += renderList(catRepos) + '\n';
+        generatedMarkdown += renderGrid(catRepos) + '\n';
       }
     }
 
