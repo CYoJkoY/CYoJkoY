@@ -33,40 +33,19 @@ async function fetchAllRepos() {
   );
 }
 
-function renderGrid(repoList) {
-  let html = '<table>\n';
-  
-  for (let i = 0; i < repoList.length; i += 2) {
-    const left = repoList[i];
-    const right = repoList[i + 1];
+function renderAlignedTable(repoList) {
+  let md = '\n| Project | Tech Stack | Stars | Description |\n';
+  md += '| :--- | :---: | :---: | :--- |\n';
 
-    html += '  <tr>\n';
+  for (const item of repoList) {
+    const name = `[**${item.name}**](${item.html_url})`;
+    const lang = item.language ? `\`${item.language}\`` : '—';
+    const stars = item.stargazers_count > 0 ? `⭐ **${item.stargazers_count}**` : '—';
+    const desc = (item.customDesc || item.description || 'No description provided.').replace(/\|/g, '\\|');
 
-    const leftStars = left.stargazers_count > 0 ? ` &nbsp;<sub>★ ${left.stargazers_count}</sub>` : '';
-    const leftLang = left.language ? ` &nbsp;<code>${left.language}</code>` : '';
-    const leftDesc = left.customDesc || left.description || 'No description provided.';
-    html += `    <td width="50%" valign="top">\n`;
-    html += `      <b><a href="${left.html_url}">${left.name}</a></b>${leftLang}${leftStars}<br/>\n`;
-    html += `      <sub>${leftDesc}</sub>\n`;
-    html += `    </td>\n`;
-
-    if (right) {
-      const rightStars = right.stargazers_count > 0 ? ` &nbsp;<sub>★ ${right.stargazers_count}</sub>` : '';
-      const rightLang = right.language ? ` &nbsp;<code>${right.language}</code>` : '';
-      const rightDesc = right.customDesc || right.description || 'No description provided.';
-      html += `    <td width="50%" valign="top">\n`;
-      html += `      <b><a href="${right.html_url}">${right.name}</a></b>${rightLang}${rightStars}<br/>\n`;
-      html += `      <sub>${rightDesc}</sub>\n`;
-      html += `    </td>\n`;
-    } else {
-      html += `    <td width="50%" valign="top"></td>\n`;
-    }
-
-    html += '  </tr>\n';
+    md += `| ${name} | ${lang} | ${stars} | ${desc} |\n`;
   }
-
-  html += '</table>\n';
-  return html;
+  return md;
 }
 
 async function run() {
@@ -94,7 +73,7 @@ async function run() {
 
       if (catRepos.length > 0) {
         generatedMarkdown += `#### ${cat.name}\n`;
-        generatedMarkdown += renderGrid(catRepos) + '\n';
+        generatedMarkdown += renderAlignedTable(catRepos) + '\n';
       }
     }
 
@@ -112,7 +91,7 @@ async function run() {
       readme.slice(endIndex);
 
     await fs.writeFile(README_PATH, updatedReadme, 'utf-8');
-    console.log(`[Success] Minimal list synced to README.md`);
+    console.log(`[Success] Aligned matrix synced to README.md`);
   } catch (err) {
     console.error('[Error]', err);
     process.exit(1);
