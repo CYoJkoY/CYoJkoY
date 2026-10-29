@@ -1,71 +1,89 @@
 {
   "categories": [
     {
-      "name": "🛠️ Systems & Desktop Architecture",
+      "name": "Desktop & System Infrastructure",
       "repos": [
-        "CapsLock-",
+        {
+          "name": "CapsLock-",
+          "desc": "Lightweight AutoHotkey v2 navigation shortcuts and window manager."
+        },
         {
           "name": "extras-",
-          "desc": "Curated Scoop bucket providing niche, portable, and custom-packaged applications."
+          "desc": "Curated Scoop bucket providing niche, portable, and custom manifests."
         },
         {
           "name": "Yoko-Windhawk-Mods",
           "desc": "Collection of native Windhawk modules for Windows shell customization."
         },
-        "CthulhuCursor",
+        {
+          "name": "CthulhuCursor",
+          "desc": "Complete animated Cthulhu-themed Windows cursor scheme."
+        },
         {
           "name": "GothicSigilCursor",
-          "desc": "Custom gothic sigil cursor assets and styling presets for Windows."
+          "desc": "Gothic sigil cursor assets and styling presets."
         }
       ]
     },
     {
-      "name": "🌐 Web Extensions & Developer Toolchains",
+      "name": "Web Extensions & Developer Tools",
       "repos": [
-        "AiGithubIngest",
-        "ChromiumCloudSync",
+        {
+          "name": "AiGithubIngest",
+          "desc": "Client-side extension mounting GitHub repositories directly into LLM chats."
+        },
+        {
+          "name": "ChromiumCloudSync",
+          "desc": "Lightweight Chromium sync for tabs, bookmarks, and extensions via Gist."
+        },
+        {
+          "name": "Neo-Godot-Tools",
+          "desc": "VS Code enhancement suite for Godot 3 and 4 development."
+        },
         {
           "name": "Yoko-ScriptCat-Scripts",
-          "desc": "Modular ScriptCat userscripts for client-side automation and enhancements."
+          "desc": "Modular ScriptCat userscripts for client-side automation."
         }
       ]
     },
     {
-      "name": "🎮 Game Development & Modding",
+      "name": "Modding & Game Ecosystem",
       "repos": [
-        "Neo-Godot-Tools",
         {
           "name": "Yoko-YzTato",
-          "desc": "Custom Brotato expansion mod featuring original mechanics, characters, and builds."
+          "desc": "Brotato expansion mod featuring custom mechanics, weapons, and builds."
         },
         {
           "name": "Yoko-NewContentLoader",
-          "desc": "Dynamic mod content injector and runtime asset loader."
+          "desc": "Dynamic mod injector and runtime asset loader."
         },
         {
           "name": "Yoko-MoreStatsContainer",
-          "desc": "UI container extension for real-time combat stats and diagnostics."
+          "desc": "In-game real-time combat stats and diagnostics UI overlay."
         },
         {
           "name": "Yoko-Fantasy",
-          "desc": "Fantasy-themed overhaul and custom weapon mechanics for Brotato."
+          "desc": "Fantasy-themed overhaul and custom weapon mechanics."
         },
         {
           "name": "Yoko-DebugMenu",
-          "desc": "In-game diagnostic overlay and developer debug menu."
+          "desc": "Developer diagnostic overlay and runtime inspection menu."
         },
         {
           "name": "Yoko-Optimize",
-          "desc": "Performance optimization suite and stutter-reduction patches."
+          "desc": "Engine stutter-reduction patches and runtime optimizations."
         }
       ]
     },
     {
-      "name": "📐 Standards & Infrastructure",
+      "name": "Standards & Architecture",
       "repos": [
-        "AzSkills"
+        {
+          "name": "AzSkills",
+          "desc": "Modular AI agent skill specifications and engineering behavioral contracts."
+        }
       ]
     }
   ],
-  "showUncategorizedInDrawer": true
+  "showUncategorizedInDrawer": false
 }
