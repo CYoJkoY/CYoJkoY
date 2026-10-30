@@ -313,8 +313,7 @@ function calculateRidgePoints(weekDays, weekIndex, width, leftMargin, chartWidth
 
   const centers = weekDays.map((d) => {
     const x = leftMargin + (d.weekday / 6) * chartWidth;
-    // Constrain peak height to ensure stable spatial clear width at VHF Commit
-    const amp = d.contributionCount > 0 ? Math.min(50, Math.pow(d.contributionCount, 0.6) * 12 + 6) : 0;
+    const amp = d.contributionCount > 0 ? Math.min(48, Math.pow(d.contributionCount, 0.6) * 11 + 6) : 0;
     return { x, amp };
   });
 
@@ -349,8 +348,8 @@ function calculateRidgePoints(weekDays, weekIndex, width, leftMargin, chartWidth
 
 function buildConsoleSvg(calendar, languageData, theme) {
   const width = 860;
-  const height = 660; // Expand the overall canvas height and reserve breathing space
-  const topPad = 126; // Move down the baseline of the first row to 126px, completely isolating the head HUD from the peak
+  const height = 660;
+  const topPad = 132; // 保留 132px 头部绝对安全高度
   const bottomPad = 86;
   const leftMargin = 120;
   const chartWidth = 620;
@@ -376,7 +375,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
   const verticalStep = (height - topPad - bottomPad) / (weeks.length - 1);
 
   let maxDayCommit = 0;
-  let peakPoint = { x: 0, y: 0, date: '', count: 0 };
+  let peakPoint = { x: 0, y: 0, date: '', count: 0, weekIdx: -1 };
   let firstDate = '';
   let lastDate = '';
 
@@ -388,12 +387,13 @@ function buildConsoleSvg(calendar, languageData, theme) {
       if (d.contributionCount > maxDayCommit) {
         maxDayCommit = d.contributionCount;
         const peakX = leftMargin + (d.weekday / 6) * chartWidth;
-        const amp = Math.min(50, Math.pow(d.contributionCount, 0.6) * 12 + 6);
+        const amp = Math.min(48, Math.pow(d.contributionCount, 0.6) * 11 + 6);
         peakPoint = {
           x: peakX,
           y: baseY - amp,
           date: d.date,
           count: d.contributionCount,
+          weekIdx,
         };
       }
     });
@@ -462,7 +462,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
     week.contributionDays.forEach((day) => {
       if (day.contributionCount > 0) {
         const peakX = leftMargin + (day.weekday / 6) * chartWidth;
-        const amp = Math.min(50, Math.pow(day.contributionCount, 0.6) * 12 + 6);
+        const amp = Math.min(48, Math.pow(day.contributionCount, 0.6) * 11 + 6);
         const peakY = baseY - amp;
 
         const arrivalProgress = Math.max(0, Math.min(1, (peakX - sweepStartX) / sweepDistance));
@@ -511,7 +511,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
     `;
   });
 
-  // 1. Rendering Top 5 Language Legend Text Lines
+  // Top 5 语言图例文字
   let langLegendItems = '';
   let curLegX = 0;
   top5Languages.forEach((item) => {
@@ -526,8 +526,8 @@ function buildConsoleSvg(calendar, languageData, theme) {
     curLegX += 13 + textStr.length * 5.8 + 14;
   });
 
-  // 2. Render bottom 2px multi-segment color ratio stack progress bar (with 1px subtle background seam)
-  const barWidth = width - 72; // 788px (x=36 to x=824)
+  // 底部 2px 堆叠进度条 (带 1px 细缝)
+  const barWidth = width - 72;
   const barHeight = 2;
   const gap = 1;
 
@@ -569,20 +569,20 @@ function buildConsoleSvg(calendar, languageData, theme) {
     curBarX += segWidth + gap;
   });
 
-  // 3. Peak mark overflow prevention and intelligent avoidance logic
+  // 波峰准星标记（包含首周/左边界全局安全避让）
   let peakMarker = '';
   if (peakPoint.x > 0 && peakPoint.y > 0) {
     const targetX = peakPoint.x;
     const targetY = peakPoint.y;
 
-    // Horizontal avoidance: if close to the right edge, the text expands to the left; otherwise, it expands to the right
     const isNearRight = targetX > width - 160;
-    const textAnchor = isNearRight ? 'end' : 'start';
-    const textOffsetX = isNearRight ? -12 : 12;
+    const isNearLeft = targetX < leftMargin + 60;
+    const textAnchor = isNearRight ? 'end' : (isNearLeft ? 'start' : 'start');
+    const textOffsetX = isNearRight ? -14 : 14;
 
-    // Vertical avoidance: If the crest is close to the top (y < 95), the text will avoid downward; otherwise, it will avoid upward.
-    const isNearTop = targetY < 95;
-    const textOffsetY = isNearTop ? 14 : -10;
+    // 垂直避让：当波峰靠近顶部 (y < 105)，标签固定向下偏移，杜绝触碰 HUD
+    const isNearTop = targetY < 105;
+    const textOffsetY = isNearTop ? 16 : -12;
 
     peakMarker = `
     <g class="peak-hud" transform="translate(${targetX.toFixed(1)}, ${targetY.toFixed(1)})">
@@ -608,26 +608,39 @@ function buildConsoleSvg(calendar, languageData, theme) {
   </defs>
 
   <style>
-    /* 1. Top sonar pulse animation */
-    @keyframes sonarWave {
-      0% { r: 4px; opacity: 0.9; stroke-width: 1.5px; }
-      70% { r: 13px; opacity: 0.15; stroke-width: 0.8px; }
-      100% { r: 16px; opacity: 0; stroke-width: 0.2px; }
+    /* 1. 信标原点声呐波纹硬件加速动画 (以 (0,0) 为变换绝对中心，零漂移) */
+    @keyframes beaconPulse {
+      0% {
+        transform: scale(0.6);
+        opacity: 0.9;
+        stroke-width: 1.5px;
+      }
+      65% {
+        transform: scale(2.6);
+        opacity: 0.15;
+        stroke-width: 0.8px;
+      }
+      100% {
+        transform: scale(3.4);
+        opacity: 0;
+        stroke-width: 0.2px;
+      }
     }
     @keyframes coreBlink {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.45; transform: scale(0.85); }
+      50% { opacity: 0.45; transform: scale(0.8); }
     }
     .beacon-core {
-      transform-origin: 36px 38px;
+      transform-box: fill-box;
+      transform-origin: center;
       animation: coreBlink 2.2s ease-in-out infinite;
     }
     .beacon-wave {
-      transform-origin: 36px 38px;
-      animation: sonarWave 2.2s cubic-bezier(0.1, 0.7, 0.3, 1) infinite;
+      transform-origin: 0px 0px;
+      animation: beaconPulse 2.2s cubic-bezier(0.1, 0.7, 0.3, 1) infinite;
     }
 
-    /* 2. Uniform Forward Sweep Radar Light Blade (Period 6.0s) */
+    /* 2. 匀速扫频光刃 */
     @keyframes radarSweepLinear {
       0% { transform: translateX(0px); opacity: 0; }
       3% { opacity: 0.95; }
@@ -639,7 +652,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
       animation: radarSweepLinear ${sweepPeriod}s linear infinite;
     }
 
-    /* 3. CRT Phosphorus Flare animation */
+    /* 3. 荧光爆发动效 */
     @keyframes phosphorExplodeMajor {
       0% { opacity: 0; transform: scale(0.3); }
       3% { opacity: 1; transform: scale(1.4); }
@@ -647,7 +660,6 @@ function buildConsoleSvg(calendar, languageData, theme) {
       35% { opacity: 0; transform: scale(0.6); }
       100% { opacity: 0; transform: scale(0.3); }
     }
-
     @keyframes phosphorExplodeMinor {
       0% { opacity: 0; transform: scale(0.2); }
       3% { opacity: 1; transform: scale(1.3); }
@@ -655,7 +667,6 @@ function buildConsoleSvg(calendar, languageData, theme) {
       32% { opacity: 0; transform: scale(0.4); }
       100% { opacity: 0; transform: scale(0.2); }
     }
-
     .flare-major {
       opacity: 0;
       animation: phosphorExplodeMajor ${sweepPeriod}s cubic-bezier(0.1, 0.9, 0.2, 1) infinite;
@@ -665,7 +676,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
       animation: phosphorExplodeMinor ${sweepPeriod}s cubic-bezier(0.1, 0.9, 0.2, 1) infinite;
     }
 
-    /* 4. target normal micromotion */
+    /* 4. 十字准星与 HUD 微动 */
     @keyframes targetRotate {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
@@ -681,12 +692,15 @@ function buildConsoleSvg(calendar, languageData, theme) {
 
   <rect width="${width}" height="${height}" rx="6" fill="${bgColor}" stroke="${borderColor}" stroke-width="1" />
   
-  <!-- 1. Header Telemetry HUD -->
+  <!-- 1. 头部 HUD (信标图标独立居中封装，彻底杜绝边界溢出) -->
   <g transform="translate(36, 38)">
-    <circle cx="6" cy="6" r="4" fill="${accentColor}" class="beacon-core" />
-    <circle cx="6" cy="6" r="4" fill="none" stroke="${accentColor}" class="beacon-wave" />
-    <text x="26" y="7" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="11" font-weight="600" fill="${strokeColor}" letter-spacing="0.14em">ANNUAL CODE TELEMETRY // LIVE</text>
-    <text x="26" y="24" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}" letter-spacing="0.08em">WINDOW: ${firstDate} — ${lastDate}</text>
+    <!-- 信标圆心绝对置于局部 (8, 8)，最大扩散包络 (r=13.6px) 严密锁定在安全边界内 -->
+    <g transform="translate(8, 8)">
+      <circle cx="0" cy="0" r="4" fill="${accentColor}" class="beacon-core" />
+      <circle cx="0" cy="0" r="4" fill="none" stroke="${accentColor}" class="beacon-wave" />
+    </g>
+    <text x="28" y="7" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="11" font-weight="600" fill="${strokeColor}" letter-spacing="0.14em">ANNUAL CODE TELEMETRY // LIVE</text>
+    <text x="28" y="24" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}" letter-spacing="0.08em">WINDOW: ${firstDate} — ${lastDate}</text>
   </g>
 
   <g transform="translate(${width - 36}, 38)" text-anchor="end">
@@ -694,20 +708,20 @@ function buildConsoleSvg(calendar, languageData, theme) {
     <text x="0" y="24" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}" letter-spacing="0.08em">MAX FLUX: ${maxDayCommit} COMMITS / DAY</text>
   </g>
 
-  <!-- 2. Subtle Grid & Time Axes -->
+  <!-- 2. 网格与时间坐标轴 -->
   ${gridLines}
   ${monthLabels}
 
-  <!-- 3. Waveform Ridges -->
+  <!-- 3. 山脊波形 -->
   ${paths}
 
-  <!-- 4. Peak Crosshair Target-->
+  <!-- 4. 波峰十字准星标记 -->
   ${peakMarker}
 
-  <!-- 5. Wave crest space-time synchronization surge highlight layer -->
+  <!-- 5. 波峰瞬时时空激荡层 -->
   ${flareNodes}
 
-  <!-- 6. oscilloscope radar beam -->
+  <!-- 6. 示波器雷达光束扫频 -->
   <g clip-path="url(#chart-viewport)">
     <g class="sweep-blade" transform="translate(${sweepStartX - 70}, 0)">
       <rect x="0" y="${topPad - 55}" width="70" height="${height - (topPad - 55) - bottomPad + 30}" fill="url(#laser-beam-${theme})" />
@@ -715,11 +729,11 @@ function buildConsoleSvg(calendar, languageData, theme) {
     </g>
   </g>
 
-  <!-- 7. Bottom X-Axis -->
+  <!-- 7. 底部 X 轴刻度 -->
   <line x1="${leftMargin}" y1="${height - bottomPad + 16}" x2="${leftMargin + chartWidth}" y2="${height - bottomPad + 16}" stroke="${borderColor}" stroke-width="1" />
   ${weekdayLabels}
 
-  <!-- 8. Bottom Legend Key (Dynamic Top 5 Language Legend)-->
+  <!-- 8. 底部 Top 5 语言图例 -->
   <g transform="translate(36, ${height - 30})">
     ${langLegendItems}
   </g>
@@ -727,7 +741,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
     <text x="0" y="4" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}" letter-spacing="0.06em">▲ PEAK HEIGHT ∝ COMMIT DENSITY</text>
   </g>
 
-  <!-- 9. 底部2px堆叠进度导轨（带 1px微纹理底部颜色微缝） -->
+  <!-- 9. 底部 2px 堆叠进度导轨 (带 1px 细微缝隙) -->
   <g transform="translate(36, ${height - 14})" clip-path="url(#bar-clip-${theme})">
     ${barSegments}
   </g>
