@@ -21,7 +21,7 @@ const BRAND_OVERRIDES = {
   GDScript: '#355570',
 };
 
-// --- color adaptive pipeline ---
+// --- 色彩自适应校准管线 ---
 
 function hexToHsl(hex) {
   let c = hex.replace(/^#/, '');
@@ -89,7 +89,7 @@ function resolveLanguageColor(langName, apiReportedColor, theme = 'dark') {
   return hslToHex(hsl.h, hsl.s, hsl.l);
 }
 
-// --- Data acquisition and incremental caching ---
+// --- 数据获取与增量缓存管线 ---
 
 async function fetchCalendar(username, token) {
   const query = `
@@ -299,7 +299,7 @@ async function resolveDominantLanguages(username, token, weeks) {
   return { weeklyMeta, top5Languages };
 }
 
-// --- Geometry and signal waveform modeling ---
+// --- 几何与信号波形算法 ---
 
 function pseudoNoise(seed) {
   const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
@@ -313,7 +313,7 @@ function calculateRidgePoints(weekDays, weekIndex, width, leftMargin, chartWidth
 
   const centers = weekDays.map((d) => {
     const x = leftMargin + (d.weekday / 6) * chartWidth;
-    const amp = d.contributionCount > 0 ? Math.min(48, Math.pow(d.contributionCount, 0.6) * 11 + 6) : 0;
+    const amp = d.contributionCount > 0 ? Math.min(46, Math.pow(d.contributionCount, 0.6) * 11 + 6) : 0;
     return { x, amp };
   });
 
@@ -344,12 +344,12 @@ function calculateRidgePoints(weekDays, weekIndex, width, leftMargin, chartWidth
   return points;
 }
 
-// --- Dynamic SVG renderer ---
+// --- 动态 SVG 渲染器 ---
 
 function buildConsoleSvg(calendar, languageData, theme) {
   const width = 860;
   const height = 660;
-  const topPad = 132; // 保留 132px 头部绝对安全高度
+  const topPad = 140; // 抬升首行基线至 140px，为顶部与第一周预留绝对开阔防区
   const bottomPad = 86;
   const leftMargin = 120;
   const chartWidth = 620;
@@ -375,7 +375,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
   const verticalStep = (height - topPad - bottomPad) / (weeks.length - 1);
 
   let maxDayCommit = 0;
-  let peakPoint = { x: 0, y: 0, date: '', count: 0, weekIdx: -1 };
+  let peakPoint = { x: 0, y: 0, date: '', count: 0 };
   let firstDate = '';
   let lastDate = '';
 
@@ -386,14 +386,19 @@ function buildConsoleSvg(calendar, languageData, theme) {
       if (d.date) lastDate = d.date;
       if (d.contributionCount > maxDayCommit) {
         maxDayCommit = d.contributionCount;
-        const peakX = leftMargin + (d.weekday / 6) * chartWidth;
-        const amp = Math.min(48, Math.pow(d.contributionCount, 0.6) * 11 + 6);
+        const rawX = leftMargin + (d.weekday / 6) * chartWidth;
+        const amp = Math.min(46, Math.pow(d.contributionCount, 0.6) * 11 + 6);
+        const rawY = baseY - amp;
+
+        // 准星绝对安全内缩：X 轴不低于 130px，Y 轴不高于 98px
+        const safeX = Math.max(leftMargin + 10, Math.min(width - 90, rawX));
+        const safeY = Math.max(98, Math.min(height - bottomPad - 20, rawY));
+
         peakPoint = {
-          x: peakX,
-          y: baseY - amp,
+          x: safeX,
+          y: safeY,
           date: d.date,
           count: d.contributionCount,
-          weekIdx,
         };
       }
     });
@@ -462,7 +467,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
     week.contributionDays.forEach((day) => {
       if (day.contributionCount > 0) {
         const peakX = leftMargin + (day.weekday / 6) * chartWidth;
-        const amp = Math.min(48, Math.pow(day.contributionCount, 0.6) * 11 + 6);
+        const amp = Math.min(46, Math.pow(day.contributionCount, 0.6) * 11 + 6);
         const peakY = baseY - amp;
 
         const arrivalProgress = Math.max(0, Math.min(1, (peakX - sweepStartX) / sweepDistance));
@@ -511,7 +516,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
     `;
   });
 
-  // Top 5 语言图例文字
+  // Top 5 语言图例
   let langLegendItems = '';
   let curLegX = 0;
   top5Languages.forEach((item) => {
@@ -526,7 +531,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
     curLegX += 13 + textStr.length * 5.8 + 14;
   });
 
-  // 底部 2px 堆叠进度条 (带 1px 细缝)
+  // 底部 2px 堆叠进度条 (带 1px 底色微缝)
   const barWidth = width - 72;
   const barHeight = 2;
   const gap = 1;
@@ -569,30 +574,35 @@ function buildConsoleSvg(calendar, languageData, theme) {
     curBarX += segWidth + gap;
   });
 
-  // 波峰准星标记（包含首周/左边界全局安全避让）
+  // 准星物理定位与渲染：容器分层彻底杜绝 transform 属性被 CSS 重写归零
   let peakMarker = '';
   if (peakPoint.x > 0 && peakPoint.y > 0) {
     const targetX = peakPoint.x;
     const targetY = peakPoint.y;
 
+    // 智能朝内避让：靠左强制向右，靠右强制向左
     const isNearRight = targetX > width - 160;
-    const isNearLeft = targetX < leftMargin + 60;
-    const textAnchor = isNearRight ? 'end' : (isNearLeft ? 'start' : 'start');
+    const isNearLeft = targetX < leftMargin + 80;
+    const textAnchor = isNearRight ? 'end' : 'start';
     const textOffsetX = isNearRight ? -14 : 14;
 
-    // 垂直避让：当波峰靠近顶部 (y < 105)，标签固定向下偏移，杜绝触碰 HUD
-    const isNearTop = targetY < 105;
+    // 垂直避让：靠顶强制向下展开标签，远离头部 HUD
+    const isNearTop = targetY < 120;
     const textOffsetY = isNearTop ? 16 : -12;
 
     peakMarker = `
-    <g class="peak-hud" transform="translate(${targetX.toFixed(1)}, ${targetY.toFixed(1)})">
-      <circle cx="0" cy="0" r="4.5" fill="none" stroke="${accentColor}" stroke-width="1.2" class="target-spin" stroke-dasharray="3 3" />
-      <circle cx="0" cy="0" r="1.5" fill="${accentColor}" />
-      <line x1="0" y1="-8" x2="0" y2="-5" stroke="${accentColor}" stroke-width="1.2" />
-      <line x1="0" y1="5" x2="0" y2="8" stroke="${accentColor}" stroke-width="1.2" />
-      <line x1="-8" y1="0" x2="-5" y2="0" stroke="${accentColor}" stroke-width="1.2" />
-      <line x1="5" y1="0" x2="8" y2="0" stroke="${accentColor}" stroke-width="1.2" />
-      <text x="${textOffsetX}" y="${textOffsetY}" dominant-baseline="central" text-anchor="${textAnchor}" font-family="ui-monospace, monospace" font-size="8.5" font-weight="700" fill="${accentColor}" letter-spacing="0.06em">PEAK // +${peakPoint.count}</text>
+    <!-- 物理位移外层容器 (严禁挂载包含 transform 的 CSS 动画) -->
+    <g transform="translate(${targetX.toFixed(1)}, ${targetY.toFixed(1)})">
+      <!-- 视效内层容器 (纯 opacity 呼吸，零位移干扰) -->
+      <g class="peak-hud-inner">
+        <circle cx="0" cy="0" r="4.5" fill="none" stroke="${accentColor}" stroke-width="1.2" class="target-spin" stroke-dasharray="3 3" />
+        <circle cx="0" cy="0" r="1.5" fill="${accentColor}" />
+        <line x1="0" y1="-8" x2="0" y2="-5" stroke="${accentColor}" stroke-width="1.2" />
+        <line x1="0" y1="5" x2="0" y2="8" stroke="${accentColor}" stroke-width="1.2" />
+        <line x1="-8" y1="0" x2="-5" y2="0" stroke="${accentColor}" stroke-width="1.2" />
+        <line x1="5" y1="0" x2="8" y2="0" stroke="${accentColor}" stroke-width="1.2" />
+        <text x="${textOffsetX}" y="${textOffsetY}" dominant-baseline="central" text-anchor="${textAnchor}" font-family="ui-monospace, monospace" font-size="8.5" font-weight="700" fill="${accentColor}" letter-spacing="0.06em">PEAK // +${peakPoint.count}</text>
+      </g>
     </g>`;
   }
 
@@ -608,23 +618,11 @@ function buildConsoleSvg(calendar, languageData, theme) {
   </defs>
 
   <style>
-    /* 1. 信标原点声呐波纹硬件加速动画 (以 (0,0) 为变换绝对中心，零漂移) */
+    /* 1. 信标原点声呐波纹硬件加速动画 */
     @keyframes beaconPulse {
-      0% {
-        transform: scale(0.6);
-        opacity: 0.9;
-        stroke-width: 1.5px;
-      }
-      65% {
-        transform: scale(2.6);
-        opacity: 0.15;
-        stroke-width: 0.8px;
-      }
-      100% {
-        transform: scale(3.4);
-        opacity: 0;
-        stroke-width: 0.2px;
-      }
+      0% { transform: scale(0.6); opacity: 0.9; stroke-width: 1.5px; }
+      65% { transform: scale(2.6); opacity: 0.15; stroke-width: 0.8px; }
+      100% { transform: scale(3.4); opacity: 0; stroke-width: 0.2px; }
     }
     @keyframes coreBlink {
       0%, 100% { opacity: 1; transform: scale(1); }
@@ -669,32 +667,37 @@ function buildConsoleSvg(calendar, languageData, theme) {
     }
     .flare-major {
       opacity: 0;
+      transform-origin: 0px 0px;
       animation: phosphorExplodeMajor ${sweepPeriod}s cubic-bezier(0.1, 0.9, 0.2, 1) infinite;
     }
     .flare-minor {
       opacity: 0;
+      transform-origin: 0px 0px;
       animation: phosphorExplodeMinor ${sweepPeriod}s cubic-bezier(0.1, 0.9, 0.2, 1) infinite;
     }
 
-    /* 4. 十字准星与 HUD 微动 */
+    /* 4. 十字准星与微动 (使用纯透明度呼吸，杜绝坐标矩阵位移污染) */
     @keyframes targetRotate {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
+    }
+    @keyframes peakBreathe {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
     }
     .target-spin {
       transform-origin: 0px 0px;
       animation: targetRotate 8s linear infinite;
     }
-    .peak-hud {
-      animation: coreBlink 3s ease-in-out infinite;
+    .peak-hud-inner {
+      animation: peakBreathe 2.6s ease-in-out infinite;
     }
   </style>
 
   <rect width="${width}" height="${height}" rx="6" fill="${bgColor}" stroke="${borderColor}" stroke-width="1" />
   
-  <!-- 1. 头部 HUD (信标图标独立居中封装，彻底杜绝边界溢出) -->
+  <!-- 1. 头部 HUD -->
   <g transform="translate(36, 38)">
-    <!-- 信标圆心绝对置于局部 (8, 8)，最大扩散包络 (r=13.6px) 严密锁定在安全边界内 -->
     <g transform="translate(8, 8)">
       <circle cx="0" cy="0" r="4" fill="${accentColor}" class="beacon-core" />
       <circle cx="0" cy="0" r="4" fill="none" stroke="${accentColor}" class="beacon-wave" />
@@ -715,7 +718,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
   <!-- 3. 山脊波形 -->
   ${paths}
 
-  <!-- 4. 波峰十字准星标记 -->
+  <!-- 4. 波峰十字准星标记 (分层隔离且安全内缩) -->
   ${peakMarker}
 
   <!-- 5. 波峰瞬时时空激荡层 -->
@@ -761,7 +764,7 @@ async function run() {
     await fs.writeFile(path.join(DIST_DIR, 'pulsar-dark.svg'), darkSvg, 'utf-8');
     await fs.writeFile(path.join(DIST_DIR, 'pulsar-light.svg'), lightSvg, 'utf-8');
 
-    console.log('[Pulsar Dynamic] Peak-clipping fixed & flare-enabled console SVGs generated successfully in dist/');
+    console.log('[Pulsar Dynamic] Peak marker decoupled & safe-clamped console SVGs generated successfully in dist/');
   } catch (err) {
     console.error('[Pulsar Fatal Error]', err);
     process.exit(1);
