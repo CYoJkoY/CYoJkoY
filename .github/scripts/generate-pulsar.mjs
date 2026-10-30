@@ -244,6 +244,9 @@ async function resolveDominantLanguages(username, token, weeks) {
       cacheMap.set(w.key, {
         dominantLanguage: dominant ? dominant.name : null,
         apiReportedColor: dominant ? dominant.apiColor : null,
+        langCounts: Object.fromEntries(
+          Array.from(langStats.entries()).map(([k, v]) => [k, { count: v.count, color: v.apiColor }])
+        ),
       });
     }
 
@@ -253,7 +256,47 @@ async function resolveDominantLanguages(username, token, weeks) {
     );
   }
 
-  return weekWindows.map((w) => cacheMap.get(w.key) || { dominantLanguage: null, apiReportedColor: null });
+  const weeklyMeta = weekWindows.map(
+    (w) => cacheMap.get(w.key) || { dominantLanguage: null, apiReportedColor: null }
+  );
+
+  const annualTotals = new Map();
+  let totalLangCommits = 0;
+
+  weekWindows.forEach((w) => {
+    const entry = cacheMap.get(w.key);
+    if (entry?.langCounts) {
+      for (const [lang, info] of Object.entries(entry.langCounts)) {
+        const cur = annualTotals.get(lang) || { count: 0, apiColor: info.color };
+        cur.count += info.count;
+        totalLangCommits += info.count;
+        if (info.color) cur.apiColor = info.color;
+        annualTotals.set(lang, cur);
+      }
+    } else if (entry?.dominantLanguage) {
+      const cur = annualTotals.get(entry.dominantLanguage) || { count: 0, apiColor: entry.apiReportedColor };
+      cur.count += 1;
+      totalLangCommits += 1;
+      annualTotals.set(entry.dominantLanguage, cur);
+    }
+  });
+
+  const top5Languages = Array.from(annualTotals.entries())
+    .sort((a, b) => b[1].count - a[1].count)
+    .slice(0, 5)
+    .map(([name, info]) => {
+      const pct = totalLangCommits > 0 
+        ? ((info.count / totalLangCommits) * 100).toFixed(1) 
+        : '0.0';
+      return {
+        name,
+        count: info.count,
+        percent: pct,
+        apiColor: info.apiColor,
+      };
+    });
+
+  return { weeklyMeta, top5Languages };
 }
 
 // --- Geometry and signal waveform modeling ---
@@ -303,19 +346,18 @@ function calculateRidgePoints(weekDays, weekIndex, width, leftMargin, chartWidth
 
 // --- Dynamic SVG renderer ---
 
-function buildConsoleSvg(calendar, weeklyLanguages, theme) {
+function buildConsoleSvg(calendar, languageData, theme) {
   const width = 860;
-  const height = 640;
+  const height = 648;
   const topPad = 80;
-  const bottomPad = 80;
+  const bottomPad = 88;
   const leftMargin = 120;
   const chartWidth = 620;
 
-  // Animation physical kinematics parameters (total cycle 6.0s, effective sweep width 740px)
   const sweepPeriod = 6.0;
-  const sweepTravelTime = 5.2; // 0s ~ 5.2 s is constant forward sweep, the remaining 0.8 s is blanking reset
+  const sweepTravelTime = 5.2;
   const sweepDistance = 740;
-  const sweepStartX = leftMargin - 50; // Starting point of light edge
+  const sweepStartX = leftMargin - 50;
 
   const isDark = theme === 'dark';
   const bgColor = isDark ? '#0d1117' : '#ffffff';
@@ -325,9 +367,11 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
   const gridDim = isDark ? '#21262d' : '#eaeef2';
   const accentColor = isDark ? '#2f81f7' : '#0969da';
   const beamTailColor = isDark ? '#58a6ff' : '#0969da';
+  const otherSegmentColor = isDark ? '#30363d' : '#d0d7de';
 
   const weeks = calendar.weeks.slice(-46);
-  const langMeta = weeklyLanguages.slice(-46);
+  const langMeta = languageData.weeklyMeta.slice(-46);
+  const top5Languages = languageData.top5Languages;
   const verticalStep = (height - topPad - bottomPad) / (weeks.length - 1);
 
   let maxDayCommit = 0;
@@ -373,7 +417,6 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
       </linearGradient>`;
   }
 
-  // transverse gradient of scanning laser beam
   gradientDefs += `
     <linearGradient id="laser-beam-${theme}" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="${beamTailColor}" stop-opacity="0" />
@@ -415,19 +458,16 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
       <path d="${lineCoords}" fill="none" stroke="${strokeColor}" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" />
     </g>`;
 
-    // Create Flare Sparkles that are precisely synchronized with the laser beam
     week.contributionDays.forEach((day) => {
       if (day.contributionCount > 0) {
         const peakX = leftMargin + (day.weekday / 6) * chartWidth;
         const amp = Math.min(68, Math.pow(day.contributionCount, 0.62) * 15 + 8);
         const peakY = baseY - amp;
 
-        // Calculate the millisecond arrival time of the light blade cutting through the current X coordinate
         const arrivalProgress = Math.max(0, Math.min(1, (peakX - sweepStartX) / sweepDistance));
         const triggerDelay = (arrivalProgress * sweepTravelTime).toFixed(2);
 
         if (day.contributionCount >= 8) {
-          // High energy submission point: four-way discharge starlight + concentric agitation ring
           flareNodes += `
           <g transform="translate(${peakX.toFixed(1)}, ${peakY.toFixed(1)})">
             <g class="flare-major" style="animation-delay: ${triggerDelay}s;">
@@ -438,7 +478,6 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
             </g>
           </g>`;
         } else {
-          // Regular submission points: fluorescent core halo
           flareNodes += `
           <g transform="translate(${peakX.toFixed(1)}, ${peakY.toFixed(1)})">
             <g class="flare-minor" style="animation-delay: ${triggerDelay}s;">
@@ -455,7 +494,7 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
       const m = new Date(firstValidDay.date).getUTCMonth();
       if (m !== prevMonth) {
         monthLabels += `
-        <text x="${leftMargin - 28}" y="${(baseY + 3.5).toFixed(1)}" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}" text-anchor="end" letter-spacing="0.08em">${MONTH_NAMES[m]}</text>
+        <text x="${leftMargin - 28}" y="${baseY.toFixed(1)}" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}" text-anchor="end" letter-spacing="0.08em">${MONTH_NAMES[m]}</text>
         <line x1="${leftMargin - 18}" y1="${baseY.toFixed(1)}" x2="${leftMargin - 8}" y2="${baseY.toFixed(1)}" stroke="${borderColor}" stroke-width="1" />`;
         prevMonth = m;
       }
@@ -467,19 +506,67 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
     const wx = leftMargin + (idx / 6) * chartWidth;
     weekdayLabels += `
       <line x1="${wx}" y1="${height - bottomPad + 16}" x2="${wx}" y2="${height - bottomPad + 22}" stroke="${borderColor}" stroke-width="1" />
-      <text x="${wx}" y="${height - bottomPad + 36}" font-family="ui-monospace, monospace" font-size="10" font-weight="600" fill="${axisColor}" text-anchor="middle" letter-spacing="0.1em">${name}</text>
+      <text x="${wx}" y="${height - bottomPad + 36}" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="10" font-weight="600" fill="${axisColor}" text-anchor="middle" letter-spacing="0.1em">${name}</text>
     `;
   });
 
+  // 1. Rendering Top 5 Language Legend Text Lines
   let langLegendItems = '';
   let curLegX = 0;
-  for (const [lang, hex] of usedLangs.entries()) {
+  top5Languages.forEach((item) => {
+    const hex = resolveLanguageColor(item.name, item.apiColor, theme);
+    const textStr = `${item.name} ${item.percent}%`;
     langLegendItems += `
       <circle cx="${curLegX + 4}" cy="4" r="3.5" fill="${hex}" />
-      <text x="${curLegX + 13}" y="7.5" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}">${lang}</text>
+      <text x="${curLegX + 13}" y="4" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}">
+        ${item.name} <tspan fill="${strokeColor}" font-weight="600" opacity="0.9">${item.percent}%</tspan>
+      </text>
     `;
-    curLegX += 18 + lang.length * 6.5 + 14;
+    curLegX += 13 + textStr.length * 5.8 + 14;
+  });
+
+  // 2. Render bottom 2px multi-segment color ratio stack progress bar (with 1px subtle background seam)
+  const barWidth = width - 72; // 788px (x=36 to x=824)
+  const barHeight = 2;
+  const gap = 1;
+
+  const segments = [];
+  let totalTop5Pct = 0;
+  top5Languages.forEach((item) => {
+    const pct = parseFloat(item.percent) || 0;
+    if (pct > 0) {
+      totalTop5Pct += pct;
+      segments.push({
+        name: item.name,
+        pct,
+        color: resolveLanguageColor(item.name, item.apiColor, theme),
+      });
+    }
+  });
+
+  const remainingPct = Math.max(0, 100 - totalTop5Pct);
+  if (remainingPct > 0.05) {
+    segments.push({
+      name: 'Other',
+      pct: remainingPct,
+      color: otherSegmentColor,
+    });
   }
+
+  const totalGaps = Math.max(0, segments.length - 1) * gap;
+  const usableWidth = barWidth - totalGaps;
+  let barSegments = '';
+  let curBarX = 0;
+
+  segments.forEach((seg, idx) => {
+    const isLast = idx === segments.length - 1;
+    const segWidth = isLast
+      ? Math.max(1, barWidth - curBarX)
+      : Math.max(1, (seg.pct / 100) * usableWidth);
+
+    barSegments += `<rect x="${curBarX.toFixed(2)}" y="0" width="${segWidth.toFixed(2)}" height="${barHeight}" fill="${seg.color}" />`;
+    curBarX += segWidth + gap;
+  });
 
   let peakMarker = '';
   if (peakPoint.x > 0 && peakPoint.y > 0) {
@@ -491,7 +578,7 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
       <line x1="0" y1="5" x2="0" y2="8" stroke="${accentColor}" stroke-width="1.2" />
       <line x1="-8" y1="0" x2="-5" y2="0" stroke="${accentColor}" stroke-width="1.2" />
       <line x1="5" y1="0" x2="8" y2="0" stroke="${accentColor}" stroke-width="1.2" />
-      <text x="10" y="3.5" font-family="ui-monospace, monospace" font-size="8.5" font-weight="700" fill="${accentColor}" letter-spacing="0.06em">PEAK // +${peakPoint.count}</text>
+      <text x="10" y="0" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="8.5" font-weight="700" fill="${accentColor}" letter-spacing="0.06em">PEAK // +${peakPoint.count}</text>
     </g>`;
   }
 
@@ -500,6 +587,9 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
     ${gradientDefs}
     <clipPath id="chart-viewport">
       <rect x="${leftMargin - 15}" y="${topPad - 15}" width="${chartWidth + 30}" height="${height - topPad - bottomPad + 30}" />
+    </clipPath>
+    <clipPath id="bar-clip-${theme}">
+      <rect x="0" y="0" width="${barWidth}" height="${barHeight}" rx="1" />
     </clipPath>
   </defs>
 
@@ -515,35 +605,21 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
       50% { opacity: 0.45; transform: scale(0.85); }
     }
     .beacon-core {
-      transform-origin: 37px 39px;
+      transform-origin: 36px 38px;
       animation: coreBlink 2.2s ease-in-out infinite;
     }
     .beacon-wave {
-      transform-origin: 37px 39px;
+      transform-origin: 36px 38px;
       animation: sonarWave 2.2s cubic-bezier(0.1, 0.7, 0.3, 1) infinite;
     }
 
-    /* 2. Uniform forward scanning radar light blade (cycle 6.0s, 5.2s scanning, 0.8s blanking) */
+    /* 2. Uniform Forward Sweep Radar Light Blade (Period 6.0s) */
     @keyframes radarSweepLinear {
-      0% {
-        transform: translateX(0px);
-        opacity: 0;
-      }
-      3% {
-        opacity: 0.95;
-      }
-      83.3% { /* 5.0s to reach the end point completely */
-        transform: translateX(${sweepDistance}px);
-        opacity: 0.95;
-      }
-      86.6% { /* Fast blanking at 5.2s */
-        transform: translateX(${sweepDistance}px);
-        opacity: 0;
-      }
-      100% {
-        transform: translateX(0px);
-        opacity: 0;
-      }
+      0% { transform: translateX(0px); opacity: 0; }
+      3% { opacity: 0.95; }
+      83.3% { transform: translateX(${sweepDistance}px); opacity: 0.95; }
+      86.6% { transform: translateX(${sweepDistance}px); opacity: 0; }
+      100% { transform: translateX(0px); opacity: 0; }
     }
     .sweep-blade {
       animation: radarSweepLinear ${sweepPeriod}s linear infinite;
@@ -551,49 +627,19 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
 
     /* 3. CRT Phosphorus Flare animation */
     @keyframes phosphorExplodeMajor {
-      0% {
-        opacity: 0;
-        transform: scale(0.3);
-      }
-      3% { /* 0.18s instantaneous violent burst */
-        opacity: 1;
-        transform: scale(1.4);
-      }
-      15% { /* 0.9s fluorescence afterglow phase */
-        opacity: 0.75;
-        transform: scale(1.0);
-      }
-      35% { /* 2.1s slow decay zeroing */
-        opacity: 0;
-        transform: scale(0.6);
-      }
-      100% {
-        opacity: 0;
-        transform: scale(0.3);
-      }
+      0% { opacity: 0; transform: scale(0.3); }
+      3% { opacity: 1; transform: scale(1.4); }
+      15% { opacity: 0.75; transform: scale(1.0); }
+      35% { opacity: 0; transform: scale(0.6); }
+      100% { opacity: 0; transform: scale(0.3); }
     }
 
     @keyframes phosphorExplodeMinor {
-      0% {
-        opacity: 0;
-        transform: scale(0.2);
-      }
-      3% {
-        opacity: 1;
-        transform: scale(1.3);
-      }
-      20% {
-        opacity: 0.5;
-        transform: scale(0.9);
-      }
-      32% {
-        opacity: 0;
-        transform: scale(0.4);
-      }
-      100% {
-        opacity: 0;
-        transform: scale(0.2);
-      }
+      0% { opacity: 0; transform: scale(0.2); }
+      3% { opacity: 1; transform: scale(1.3); }
+      20% { opacity: 0.5; transform: scale(0.9); }
+      32% { opacity: 0; transform: scale(0.4); }
+      100% { opacity: 0; transform: scale(0.2); }
     }
 
     .flare-major {
@@ -605,7 +651,7 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
       animation: phosphorExplodeMinor ${sweepPeriod}s cubic-bezier(0.1, 0.9, 0.2, 1) infinite;
     }
 
-    /* 4. Normal micromotion of target and waveform */
+    /* 4. target normal micromotion */
     @keyframes targetRotate {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
@@ -622,16 +668,16 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
   <rect width="${width}" height="${height}" rx="6" fill="${bgColor}" stroke="${borderColor}" stroke-width="1" />
   
   <!-- 1. Header Telemetry HUD -->
-  <g transform="translate(32, 34)">
-    <circle cx="5" cy="5" r="4" fill="${accentColor}" class="beacon-core" />
-    <circle cx="5" cy="5" r="4" fill="none" stroke="${accentColor}" class="beacon-wave" />
-    <text x="20" y="9" font-family="ui-monospace, monospace" font-size="11" font-weight="600" fill="${strokeColor}" letter-spacing="0.14em">ANNUAL CODE TELEMETRY // LIVE</text>
-    <text x="20" y="24" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}" letter-spacing="0.08em">WINDOW: ${firstDate} — ${lastDate}</text>
+  <g transform="translate(36, 38)">
+    <circle cx="6" cy="6" r="4" fill="${accentColor}" class="beacon-core" />
+    <circle cx="6" cy="6" r="4" fill="none" stroke="${accentColor}" class="beacon-wave" />
+    <text x="26" y="7" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="11" font-weight="600" fill="${strokeColor}" letter-spacing="0.14em">ANNUAL CODE TELEMETRY // LIVE</text>
+    <text x="26" y="24" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}" letter-spacing="0.08em">WINDOW: ${firstDate} — ${lastDate}</text>
   </g>
 
-  <g transform="translate(${width - 32}, 34)" text-anchor="end">
-    <text x="0" y="9" font-family="ui-monospace, monospace" font-size="11" font-weight="700" fill="${strokeColor}" letter-spacing="0.1em">${calendar.totalContributions.toLocaleString()} COMMITS</text>
-    <text x="0" y="24" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}" letter-spacing="0.08em">MAX FLUX: ${maxDayCommit} COMMITS / DAY</text>
+  <g transform="translate(${width - 36}, 38)" text-anchor="end">
+    <text x="0" y="7" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="11" font-weight="700" fill="${strokeColor}" letter-spacing="0.1em">${calendar.totalContributions.toLocaleString()} COMMITS</text>
+    <text x="0" y="24" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}" letter-spacing="0.08em">MAX FLUX: ${maxDayCommit} COMMITS / DAY</text>
   </g>
 
   <!-- 2. Subtle Grid & Time Axes -->
@@ -644,10 +690,10 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
   <!-- 4. Peak Crosshair Target -->
   ${peakMarker}
 
-  <!-- 5. Flare Highlights -->
+  <!-- 5. Wave crest space-time synchronization surge highlight layer -->
   ${flareNodes}
 
-  <!-- 6. oscilloscope radar beam (leading edge at local x=70) -->
+  <!-- 6. oscilloscope radar beam -->
   <g clip-path="url(#chart-viewport)">
     <g class="sweep-blade" transform="translate(${sweepStartX - 70}, 0)">
       <rect x="0" y="${topPad - 15}" width="70" height="${height - topPad - bottomPad + 30}" fill="url(#laser-beam-${theme})" />
@@ -659,12 +705,17 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
   <line x1="${leftMargin}" y1="${height - bottomPad + 16}" x2="${leftMargin + chartWidth}" y2="${height - bottomPad + 16}" stroke="${borderColor}" stroke-width="1" />
   ${weekdayLabels}
 
-  <!-- 8. Bottom Legend Key -->
-  <g transform="translate(32, ${height - 24})">
+  <!-- 8. Bottom Legend Key (Dynamic Top 5 Language Legend) -->
+  <g transform="translate(36, ${height - 30})">
     ${langLegendItems}
   </g>
-  <g transform="translate(${width - 32}, ${height - 24})" text-anchor="end">
-    <text x="0" y="7" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}" letter-spacing="0.06em">▲ PEAK HEIGHT ∝ COMMIT DENSITY</text>
+  <g transform="translate(${width - 36}, ${height - 30})" text-anchor="end">
+    <text x="0" y="4" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}" letter-spacing="0.06em">▲ PEAK HEIGHT ∝ COMMIT DENSITY</text>
+  </g>
+
+  <!-- 9. Bottom 2px Stacked Progress Rail (With 1px fine background with fine seam) -->
+  <g transform="translate(36, ${height - 14})" clip-path="url(#bar-clip-${theme})">
+    ${barSegments}
   </g>
 </svg>`;
 }
@@ -674,15 +725,15 @@ async function run() {
     await fs.mkdir(DIST_DIR, { recursive: true });
 
     const calendar = await fetchCalendar(USERNAME, TOKEN);
-    const weeklyLanguages = await resolveDominantLanguages(USERNAME, TOKEN, calendar.weeks);
+    const languageData = await resolveDominantLanguages(USERNAME, TOKEN, calendar.weeks);
 
-    const darkSvg = buildConsoleSvg(calendar, weeklyLanguages, 'dark');
-    const lightSvg = buildConsoleSvg(calendar, weeklyLanguages, 'light');
+    const darkSvg = buildConsoleSvg(calendar, languageData, 'dark');
+    const lightSvg = buildConsoleSvg(calendar, languageData, 'light');
 
     await fs.writeFile(path.join(DIST_DIR, 'pulsar-dark.svg'), darkSvg, 'utf-8');
     await fs.writeFile(path.join(DIST_DIR, 'pulsar-light.svg'), lightSvg, 'utf-8');
 
-    console.log('[Pulsar Dynamic] Flare-enabled telemetry console SVGs generated successfully in dist/');
+    console.log('[Pulsar Dynamic] Stacked rail with 1px gaps & flare-enabled console SVGs generated successfully in dist/');
   } catch (err) {
     console.error('[Pulsar Fatal Error]', err);
     process.exit(1);
