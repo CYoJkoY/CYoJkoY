@@ -44,13 +44,10 @@ jobs:
             git push
           fi
 
-      - name: Generate Contribution Snake SVG
-        uses: Platane/snk/svg-only@v3
-        with:
-          github_user_name: ${{ github.repository_owner }}
-          outputs: |
-            dist/github-contribution-grid-snake.svg
-            dist/github-contribution-grid-snake-dark.svg?palette=github-dark
+      - name: Generate Pulsar Ridgeline SVGs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node .github/scripts/generate-pulsar.mjs
 
       - name: Push Assets to output branch
         uses: crazy-max/ghaction-github-pages@v3.1.0
