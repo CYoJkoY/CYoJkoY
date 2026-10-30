@@ -74,7 +74,7 @@ function generateCardSvg(repo) {
   const line1 = escapeXml(lines[0] || '');
   const line2 = escapeXml(lines[1] || '');
 
-  // 底部元素统一以 y=82 为基准行
+  // The bottom element is uniformly based on y=82
   let footerItems = '';
   let currentX = 16;
 
@@ -101,7 +101,7 @@ function generateCardSvg(repo) {
   </g>`;
   currentX += 20 + starWidth + 16;
 
-  // 3. Forks (已完全修复三圆心绝对同心的 repo-forked 矢量)
+  // 3. Forks (completely fixed three-center absolute concentric repo-forked vector)
   const forkText = String(forks);
   footerItems += `
   <g transform="translate(${currentX}, 0)">

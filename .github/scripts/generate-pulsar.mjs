@@ -21,6 +21,8 @@ const BRAND_OVERRIDES = {
   GDScript: '#355570',
 };
 
+// --- color adaptive pipeline ---
+
 function hexToHsl(hex) {
   let c = hex.replace(/^#/, '');
   if (c.length === 3) c = c.split('').map((x) => x + x).join('');
@@ -79,17 +81,15 @@ function resolveLanguageColor(langName, apiReportedColor, theme = 'dark') {
     : generateDeterministicHsl(langName);
 
   if (theme === 'dark') {
-    if (hsl.l < 50) {
-      hsl.l = Math.min(75, Math.max(58, hsl.l + 25));
-    }
+    if (hsl.l < 50) hsl.l = Math.min(75, Math.max(58, hsl.l + 25));
   } else {
-    if (hsl.l > 55) {
-      hsl.l = Math.max(30, Math.min(45, hsl.l - 20));
-    }
+    if (hsl.l > 55) hsl.l = Math.max(30, Math.min(45, hsl.l - 20));
   }
 
   return hslToHex(hsl.h, hsl.s, hsl.l);
 }
+
+// --- Data acquisition and incremental caching ---
 
 async function fetchCalendar(username, token) {
   const query = `
@@ -138,7 +138,6 @@ async function loadCache() {
 
 async function saveCache(cacheMap, validKeys) {
   await fs.mkdir(CACHE_DIR, { recursive: true });
-
   const pruned = {};
   for (const key of validKeys) {
     if (cacheMap.has(key)) pruned[key] = cacheMap.get(key);
@@ -257,6 +256,8 @@ async function resolveDominantLanguages(username, token, weeks) {
   return weekWindows.map((w) => cacheMap.get(w.key) || { dominantLanguage: null, apiReportedColor: null });
 }
 
+// --- Geometry and signal waveform modeling ---
+
 function pseudoNoise(seed) {
   const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
   return (x - Math.floor(x)) * 2 - 1;
@@ -300,6 +301,8 @@ function calculateRidgePoints(weekDays, weekIndex, width, leftMargin, chartWidth
   return points;
 }
 
+// --- Dynamic SVG renderer ---
+
 function buildConsoleSvg(calendar, weeklyLanguages, theme) {
   const width = 860;
   const height = 640;
@@ -308,6 +311,12 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
   const leftMargin = 120;
   const chartWidth = 620;
 
+  // Animation physical kinematics parameters (total cycle 6.0s, effective sweep width 740px)
+  const sweepPeriod = 6.0;
+  const sweepTravelTime = 5.2; // 0s ~ 5.2 s is constant forward sweep, the remaining 0.8 s is blanking reset
+  const sweepDistance = 740;
+  const sweepStartX = leftMargin - 50; // Starting point of light edge
+
   const isDark = theme === 'dark';
   const bgColor = isDark ? '#0d1117' : '#ffffff';
   const borderColor = isDark ? '#30363d' : '#d0d7de';
@@ -315,20 +324,33 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
   const axisColor = isDark ? '#8b949e' : '#656d76';
   const gridDim = isDark ? '#21262d' : '#eaeef2';
   const accentColor = isDark ? '#2f81f7' : '#0969da';
+  const beamTailColor = isDark ? '#58a6ff' : '#0969da';
 
   const weeks = calendar.weeks.slice(-46);
   const langMeta = weeklyLanguages.slice(-46);
   const verticalStep = (height - topPad - bottomPad) / (weeks.length - 1);
 
   let maxDayCommit = 0;
+  let peakPoint = { x: 0, y: 0, date: '', count: 0 };
   let firstDate = '';
   let lastDate = '';
 
-  weeks.forEach((w) => {
+  weeks.forEach((w, weekIdx) => {
+    const baseY = topPad + weekIdx * verticalStep;
     w.contributionDays.forEach((d) => {
       if (!firstDate && d.date) firstDate = d.date;
       if (d.date) lastDate = d.date;
-      if (d.contributionCount > maxDayCommit) maxDayCommit = d.contributionCount;
+      if (d.contributionCount > maxDayCommit) {
+        maxDayCommit = d.contributionCount;
+        const peakX = leftMargin + (d.weekday / 6) * chartWidth;
+        const amp = Math.min(68, Math.pow(d.contributionCount, 0.62) * 15 + 8);
+        peakPoint = {
+          x: peakX,
+          y: baseY - amp,
+          date: d.date,
+          count: d.contributionCount,
+        };
+      }
     });
   });
 
@@ -345,11 +367,21 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
     const safeId = lang.replace(/[^a-zA-Z0-9_-]/g, '_');
     gradientDefs += `
       <linearGradient id="glow-${safeId}-${theme}" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="${hex}" stop-opacity="${isDark ? 0.38 : 0.26}" />
-        <stop offset="60%" stop-color="${hex}" stop-opacity="${isDark ? 0.12 : 0.08}" />
+        <stop offset="0%" stop-color="${hex}" stop-opacity="${isDark ? 0.42 : 0.28}" />
+        <stop offset="60%" stop-color="${hex}" stop-opacity="${isDark ? 0.14 : 0.09}" />
         <stop offset="100%" stop-color="${bgColor}" stop-opacity="0.95" />
       </linearGradient>`;
   }
+
+  // transverse gradient of scanning laser beam
+  gradientDefs += `
+    <linearGradient id="laser-beam-${theme}" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="${beamTailColor}" stop-opacity="0" />
+      <stop offset="60%" stop-color="${beamTailColor}" stop-opacity="${isDark ? 0.15 : 0.10}" />
+      <stop offset="96%" stop-color="${beamTailColor}" stop-opacity="${isDark ? 0.50 : 0.38}" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="${isDark ? 0.95 : 0.85}" />
+    </linearGradient>
+  `;
 
   let gridLines = '';
   [1, 3, 5].forEach((wDay) => {
@@ -360,11 +392,13 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
   let paths = '';
   let monthLabels = '';
   let prevMonth = -1;
+  let flareNodes = '';
 
   weeks.forEach((week, i) => {
     const baseY = topPad + i * verticalStep;
     const points = calculateRidgePoints(week.contributionDays, i, width, leftMargin, chartWidth, baseY);
     const meta = langMeta[i];
+    const dominantHex = meta.dominantLanguage ? usedLangs.get(meta.dominantLanguage) || accentColor : accentColor;
 
     const lineCoords = points.map((p, idx) => `${idx === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
     const fillCoords = `${lineCoords} L ${points[points.length - 1].x} ${baseY + 45} L ${points[0].x} ${baseY + 45} Z`;
@@ -380,6 +414,41 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
       <path d="${fillCoords}" fill="${fillStyle}" stroke="none" />
       <path d="${lineCoords}" fill="none" stroke="${strokeColor}" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" />
     </g>`;
+
+    // Create Flare Sparkles that are precisely synchronized with the laser beam
+    week.contributionDays.forEach((day) => {
+      if (day.contributionCount > 0) {
+        const peakX = leftMargin + (day.weekday / 6) * chartWidth;
+        const amp = Math.min(68, Math.pow(day.contributionCount, 0.62) * 15 + 8);
+        const peakY = baseY - amp;
+
+        // Calculate the millisecond arrival time of the light blade cutting through the current X coordinate
+        const arrivalProgress = Math.max(0, Math.min(1, (peakX - sweepStartX) / sweepDistance));
+        const triggerDelay = (arrivalProgress * sweepTravelTime).toFixed(2);
+
+        if (day.contributionCount >= 8) {
+          // High energy submission point: four-way discharge starlight + concentric agitation ring
+          flareNodes += `
+          <g transform="translate(${peakX.toFixed(1)}, ${peakY.toFixed(1)})">
+            <g class="flare-major" style="animation-delay: ${triggerDelay}s;">
+              <circle cx="0" cy="0" r="10" fill="${dominantHex}" opacity="0.3" class="flare-ring" />
+              <line x1="-7" y1="0" x2="7" y2="0" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="0" y1="-7" x2="0" y2="7" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />
+              <circle cx="0" cy="0" r="2.5" fill="#ffffff" />
+            </g>
+          </g>`;
+        } else {
+          // Regular submission points: fluorescent core halo
+          flareNodes += `
+          <g transform="translate(${peakX.toFixed(1)}, ${peakY.toFixed(1)})">
+            <g class="flare-minor" style="animation-delay: ${triggerDelay}s;">
+              <circle cx="0" cy="0" r="6" fill="${dominantHex}" opacity="0.45" />
+              <circle cx="0" cy="0" r="2" fill="#ffffff" />
+            </g>
+          </g>`;
+        }
+      }
+    });
 
     const firstValidDay = week.contributionDays.find((d) => d.date);
     if (firstValidDay) {
@@ -412,17 +481,152 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
     curLegX += 18 + lang.length * 6.5 + 14;
   }
 
+  let peakMarker = '';
+  if (peakPoint.x > 0 && peakPoint.y > 0) {
+    peakMarker = `
+    <g class="peak-hud" transform="translate(${peakPoint.x.toFixed(1)}, ${(peakPoint.y - 12).toFixed(1)})">
+      <circle cx="0" cy="0" r="4.5" fill="none" stroke="${accentColor}" stroke-width="1.2" class="target-spin" stroke-dasharray="3 3" />
+      <circle cx="0" cy="0" r="1.5" fill="${accentColor}" />
+      <line x1="0" y1="-8" x2="0" y2="-5" stroke="${accentColor}" stroke-width="1.2" />
+      <line x1="0" y1="5" x2="0" y2="8" stroke="${accentColor}" stroke-width="1.2" />
+      <line x1="-8" y1="0" x2="-5" y2="0" stroke="${accentColor}" stroke-width="1.2" />
+      <line x1="5" y1="0" x2="8" y2="0" stroke="${accentColor}" stroke-width="1.2" />
+      <text x="10" y="3.5" font-family="ui-monospace, monospace" font-size="8.5" font-weight="700" fill="${accentColor}" letter-spacing="0.06em">PEAK // +${peakPoint.count}</text>
+    </g>`;
+  }
+
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="100%" height="auto">
   <defs>
     ${gradientDefs}
+    <clipPath id="chart-viewport">
+      <rect x="${leftMargin - 15}" y="${topPad - 15}" width="${chartWidth + 30}" height="${height - topPad - bottomPad + 30}" />
+    </clipPath>
   </defs>
+
+  <style>
+    /* 1. Top sonar pulse animation */
+    @keyframes sonarWave {
+      0% { r: 4px; opacity: 0.9; stroke-width: 1.5px; }
+      70% { r: 13px; opacity: 0.15; stroke-width: 0.8px; }
+      100% { r: 16px; opacity: 0; stroke-width: 0.2px; }
+    }
+    @keyframes coreBlink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.85); }
+    }
+    .beacon-core {
+      transform-origin: 37px 39px;
+      animation: coreBlink 2.2s ease-in-out infinite;
+    }
+    .beacon-wave {
+      transform-origin: 37px 39px;
+      animation: sonarWave 2.2s cubic-bezier(0.1, 0.7, 0.3, 1) infinite;
+    }
+
+    /* 2. Uniform forward scanning radar light blade (cycle 6.0s, 5.2s scanning, 0.8s blanking) */
+    @keyframes radarSweepLinear {
+      0% {
+        transform: translateX(0px);
+        opacity: 0;
+      }
+      3% {
+        opacity: 0.95;
+      }
+      83.3% { /* 5.0s to reach the end point completely */
+        transform: translateX(${sweepDistance}px);
+        opacity: 0.95;
+      }
+      86.6% { /* Fast blanking at 5.2s */
+        transform: translateX(${sweepDistance}px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateX(0px);
+        opacity: 0;
+      }
+    }
+    .sweep-blade {
+      animation: radarSweepLinear ${sweepPeriod}s linear infinite;
+    }
+
+    /* 3. CRT Phosphorus Flare animation */
+    @keyframes phosphorExplodeMajor {
+      0% {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+      3% { /* 0.18s instantaneous violent burst */
+        opacity: 1;
+        transform: scale(1.4);
+      }
+      15% { /* 0.9s fluorescence afterglow phase */
+        opacity: 0.75;
+        transform: scale(1.0);
+      }
+      35% { /* 2.1s slow decay zeroing */
+        opacity: 0;
+        transform: scale(0.6);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+    }
+
+    @keyframes phosphorExplodeMinor {
+      0% {
+        opacity: 0;
+        transform: scale(0.2);
+      }
+      3% {
+        opacity: 1;
+        transform: scale(1.3);
+      }
+      20% {
+        opacity: 0.5;
+        transform: scale(0.9);
+      }
+      32% {
+        opacity: 0;
+        transform: scale(0.4);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0.2);
+      }
+    }
+
+    .flare-major {
+      opacity: 0;
+      animation: phosphorExplodeMajor ${sweepPeriod}s cubic-bezier(0.1, 0.9, 0.2, 1) infinite;
+    }
+    .flare-minor {
+      opacity: 0;
+      animation: phosphorExplodeMinor ${sweepPeriod}s cubic-bezier(0.1, 0.9, 0.2, 1) infinite;
+    }
+
+    /* 4. Normal micromotion of target and waveform */
+    @keyframes targetRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .target-spin {
+      transform-origin: 0px 0px;
+      animation: targetRotate 8s linear infinite;
+    }
+    .peak-hud {
+      animation: coreBlink 3s ease-in-out infinite;
+    }
+  </style>
+
   <rect width="${width}" height="${height}" rx="6" fill="${bgColor}" stroke="${borderColor}" stroke-width="1" />
   
   <!-- 1. Header Telemetry HUD -->
   <g transform="translate(32, 34)">
-    <circle cx="5" cy="5" r="4" fill="${accentColor}" />
-    <text x="18" y="9" font-family="ui-monospace, monospace" font-size="11" font-weight="600" fill="${strokeColor}" letter-spacing="0.14em">ANNUAL CODE TELEMETRY</text>
-    <text x="18" y="24" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}" letter-spacing="0.08em">WINDOW: ${firstDate} — ${lastDate}</text>
+    <circle cx="5" cy="5" r="4" fill="${accentColor}" class="beacon-core" />
+    <circle cx="5" cy="5" r="4" fill="none" stroke="${accentColor}" class="beacon-wave" />
+    <text x="20" y="9" font-family="ui-monospace, monospace" font-size="11" font-weight="600" fill="${strokeColor}" letter-spacing="0.14em">ANNUAL CODE TELEMETRY // LIVE</text>
+    <text x="20" y="24" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}" letter-spacing="0.08em">WINDOW: ${firstDate} — ${lastDate}</text>
   </g>
 
   <g transform="translate(${width - 32}, 34)" text-anchor="end">
@@ -437,11 +641,25 @@ function buildConsoleSvg(calendar, weeklyLanguages, theme) {
   <!-- 3. Waveform Ridges -->
   ${paths}
 
-  <!-- 4. Bottom X-Axis -->
+  <!-- 4. Peak Crosshair Target -->
+  ${peakMarker}
+
+  <!-- 5. Flare Highlights -->
+  ${flareNodes}
+
+  <!-- 6. oscilloscope radar beam (leading edge at local x=70) -->
+  <g clip-path="url(#chart-viewport)">
+    <g class="sweep-blade" transform="translate(${sweepStartX - 70}, 0)">
+      <rect x="0" y="${topPad - 15}" width="70" height="${height - topPad - bottomPad + 30}" fill="url(#laser-beam-${theme})" />
+      <line x1="70" y1="${topPad - 15}" x2="70" y2="${height - bottomPad + 15}" stroke="#ffffff" stroke-width="1.3" opacity="${isDark ? 0.95 : 0.8}" />
+    </g>
+  </g>
+
+  <!-- 7. Bottom X-Axis -->
   <line x1="${leftMargin}" y1="${height - bottomPad + 16}" x2="${leftMargin + chartWidth}" y2="${height - bottomPad + 16}" stroke="${borderColor}" stroke-width="1" />
   ${weekdayLabels}
 
-  <!-- 5. Bottom Legend Key -->
+  <!-- 8. Bottom Legend Key -->
   <g transform="translate(32, ${height - 24})">
     ${langLegendItems}
   </g>
@@ -464,7 +682,7 @@ async function run() {
     await fs.writeFile(path.join(DIST_DIR, 'pulsar-dark.svg'), darkSvg, 'utf-8');
     await fs.writeFile(path.join(DIST_DIR, 'pulsar-light.svg'), lightSvg, 'utf-8');
 
-    console.log('[Pulsar] Telemetry console SVGs generated successfully in dist/');
+    console.log('[Pulsar Dynamic] Flare-enabled telemetry console SVGs generated successfully in dist/');
   } catch (err) {
     console.error('[Pulsar Fatal Error]', err);
     process.exit(1);
