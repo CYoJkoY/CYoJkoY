@@ -313,7 +313,8 @@ function calculateRidgePoints(weekDays, weekIndex, width, leftMargin, chartWidth
 
   const centers = weekDays.map((d) => {
     const x = leftMargin + (d.weekday / 6) * chartWidth;
-    const amp = d.contributionCount > 0 ? Math.min(68, Math.pow(d.contributionCount, 0.62) * 15 + 8) : 0;
+    // Constrain peak height to ensure stable spatial clear width at VHF Commit
+    const amp = d.contributionCount > 0 ? Math.min(50, Math.pow(d.contributionCount, 0.6) * 12 + 6) : 0;
     return { x, amp };
   });
 
@@ -348,9 +349,9 @@ function calculateRidgePoints(weekDays, weekIndex, width, leftMargin, chartWidth
 
 function buildConsoleSvg(calendar, languageData, theme) {
   const width = 860;
-  const height = 648;
-  const topPad = 80;
-  const bottomPad = 88;
+  const height = 660; // Expand the overall canvas height and reserve breathing space
+  const topPad = 126; // Move down the baseline of the first row to 126px, completely isolating the head HUD from the peak
+  const bottomPad = 86;
   const leftMargin = 120;
   const chartWidth = 620;
 
@@ -387,7 +388,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
       if (d.contributionCount > maxDayCommit) {
         maxDayCommit = d.contributionCount;
         const peakX = leftMargin + (d.weekday / 6) * chartWidth;
-        const amp = Math.min(68, Math.pow(d.contributionCount, 0.62) * 15 + 8);
+        const amp = Math.min(50, Math.pow(d.contributionCount, 0.6) * 12 + 6);
         peakPoint = {
           x: peakX,
           y: baseY - amp,
@@ -429,7 +430,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
   let gridLines = '';
   [1, 3, 5].forEach((wDay) => {
     const gx = leftMargin + (wDay / 6) * chartWidth;
-    gridLines += `<line x1="${gx}" y1="${topPad - 10}" x2="${gx}" y2="${height - bottomPad + 10}" stroke="${gridDim}" stroke-dasharray="2 4" stroke-width="1" />`;
+    gridLines += `<line x1="${gx}" y1="${topPad - 55}" x2="${gx}" y2="${height - bottomPad + 10}" stroke="${gridDim}" stroke-dasharray="2 4" stroke-width="1" />`;
   });
 
   let paths = '';
@@ -461,7 +462,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
     week.contributionDays.forEach((day) => {
       if (day.contributionCount > 0) {
         const peakX = leftMargin + (day.weekday / 6) * chartWidth;
-        const amp = Math.min(68, Math.pow(day.contributionCount, 0.62) * 15 + 8);
+        const amp = Math.min(50, Math.pow(day.contributionCount, 0.6) * 12 + 6);
         const peakY = baseY - amp;
 
         const arrivalProgress = Math.max(0, Math.min(1, (peakX - sweepStartX) / sweepDistance));
@@ -568,17 +569,30 @@ function buildConsoleSvg(calendar, languageData, theme) {
     curBarX += segWidth + gap;
   });
 
+  // 3. Peak mark overflow prevention and intelligent avoidance logic
   let peakMarker = '';
   if (peakPoint.x > 0 && peakPoint.y > 0) {
+    const targetX = peakPoint.x;
+    const targetY = peakPoint.y;
+
+    // Horizontal avoidance: if close to the right edge, the text expands to the left; otherwise, it expands to the right
+    const isNearRight = targetX > width - 160;
+    const textAnchor = isNearRight ? 'end' : 'start';
+    const textOffsetX = isNearRight ? -12 : 12;
+
+    // Vertical avoidance: If the crest is close to the top (y < 95), the text will avoid downward; otherwise, it will avoid upward.
+    const isNearTop = targetY < 95;
+    const textOffsetY = isNearTop ? 14 : -10;
+
     peakMarker = `
-    <g class="peak-hud" transform="translate(${peakPoint.x.toFixed(1)}, ${(peakPoint.y - 12).toFixed(1)})">
+    <g class="peak-hud" transform="translate(${targetX.toFixed(1)}, ${targetY.toFixed(1)})">
       <circle cx="0" cy="0" r="4.5" fill="none" stroke="${accentColor}" stroke-width="1.2" class="target-spin" stroke-dasharray="3 3" />
       <circle cx="0" cy="0" r="1.5" fill="${accentColor}" />
       <line x1="0" y1="-8" x2="0" y2="-5" stroke="${accentColor}" stroke-width="1.2" />
       <line x1="0" y1="5" x2="0" y2="8" stroke="${accentColor}" stroke-width="1.2" />
       <line x1="-8" y1="0" x2="-5" y2="0" stroke="${accentColor}" stroke-width="1.2" />
       <line x1="5" y1="0" x2="8" y2="0" stroke="${accentColor}" stroke-width="1.2" />
-      <text x="10" y="0" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="8.5" font-weight="700" fill="${accentColor}" letter-spacing="0.06em">PEAK // +${peakPoint.count}</text>
+      <text x="${textOffsetX}" y="${textOffsetY}" dominant-baseline="central" text-anchor="${textAnchor}" font-family="ui-monospace, monospace" font-size="8.5" font-weight="700" fill="${accentColor}" letter-spacing="0.06em">PEAK // +${peakPoint.count}</text>
     </g>`;
   }
 
@@ -586,7 +600,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
   <defs>
     ${gradientDefs}
     <clipPath id="chart-viewport">
-      <rect x="${leftMargin - 15}" y="${topPad - 15}" width="${chartWidth + 30}" height="${height - topPad - bottomPad + 30}" />
+      <rect x="${leftMargin - 15}" y="${topPad - 55}" width="${chartWidth + 30}" height="${height - (topPad - 55) - bottomPad + 15}" />
     </clipPath>
     <clipPath id="bar-clip-${theme}">
       <rect x="0" y="0" width="${barWidth}" height="${barHeight}" rx="1" />
@@ -687,7 +701,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
   <!-- 3. Waveform Ridges -->
   ${paths}
 
-  <!-- 4. Peak Crosshair Target -->
+  <!-- 4. Peak Crosshair Target-->
   ${peakMarker}
 
   <!-- 5. Wave crest space-time synchronization surge highlight layer -->
@@ -696,8 +710,8 @@ function buildConsoleSvg(calendar, languageData, theme) {
   <!-- 6. oscilloscope radar beam -->
   <g clip-path="url(#chart-viewport)">
     <g class="sweep-blade" transform="translate(${sweepStartX - 70}, 0)">
-      <rect x="0" y="${topPad - 15}" width="70" height="${height - topPad - bottomPad + 30}" fill="url(#laser-beam-${theme})" />
-      <line x1="70" y1="${topPad - 15}" x2="70" y2="${height - bottomPad + 15}" stroke="#ffffff" stroke-width="1.3" opacity="${isDark ? 0.95 : 0.8}" />
+      <rect x="0" y="${topPad - 55}" width="70" height="${height - (topPad - 55) - bottomPad + 30}" fill="url(#laser-beam-${theme})" />
+      <line x1="70" y1="${topPad - 55}" x2="70" y2="${height - bottomPad + 15}" stroke="#ffffff" stroke-width="1.3" opacity="${isDark ? 0.95 : 0.8}" />
     </g>
   </g>
 
@@ -705,7 +719,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
   <line x1="${leftMargin}" y1="${height - bottomPad + 16}" x2="${leftMargin + chartWidth}" y2="${height - bottomPad + 16}" stroke="${borderColor}" stroke-width="1" />
   ${weekdayLabels}
 
-  <!-- 8. Bottom Legend Key (Dynamic Top 5 Language Legend) -->
+  <!-- 8. Bottom Legend Key (Dynamic Top 5 Language Legend)-->
   <g transform="translate(36, ${height - 30})">
     ${langLegendItems}
   </g>
@@ -713,7 +727,7 @@ function buildConsoleSvg(calendar, languageData, theme) {
     <text x="0" y="4" dominant-baseline="central" font-family="ui-monospace, monospace" font-size="9" fill="${axisColor}" letter-spacing="0.06em">▲ PEAK HEIGHT ∝ COMMIT DENSITY</text>
   </g>
 
-  <!-- 9. Bottom 2px Stacked Progress Rail (With 1px fine background with fine seam) -->
+  <!-- 9. 底部2px堆叠进度导轨（带 1px微纹理底部颜色微缝） -->
   <g transform="translate(36, ${height - 14})" clip-path="url(#bar-clip-${theme})">
     ${barSegments}
   </g>
@@ -733,7 +747,7 @@ async function run() {
     await fs.writeFile(path.join(DIST_DIR, 'pulsar-dark.svg'), darkSvg, 'utf-8');
     await fs.writeFile(path.join(DIST_DIR, 'pulsar-light.svg'), lightSvg, 'utf-8');
 
-    console.log('[Pulsar Dynamic] Stacked rail with 1px gaps & flare-enabled console SVGs generated successfully in dist/');
+    console.log('[Pulsar Dynamic] Peak-clipping fixed & flare-enabled console SVGs generated successfully in dist/');
   } catch (err) {
     console.error('[Pulsar Fatal Error]', err);
     process.exit(1);
