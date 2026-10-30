@@ -67,7 +67,7 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/CYoJkoY/CYoJkoY/output/pulsar-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/CYoJkoY/CYoJkoY/output/pulsar-light.svg">
-    <img alt="Pulsar Activity Plot" src="https://raw.githubusercontent.com/CYoJkoY/CYoJkoY/output/pulsar-dark.svg" width="100%">
+    <img alt="Annual Code Telemetry" src="https://raw.githubusercontent.com/CYoJkoY/CYoJkoY/output/pulsar-dark.svg" width="100%">
   </picture>
 </p>
 

@@ -2,8 +2,8 @@ name: Sync Repos to Profile README
 
 on:
   schedule:
-    - cron: '0 0 * * *' # 每天北京时间 08:00 定时执行
-  workflow_dispatch:   # 控制台支持手动执行
+    - cron: '0 0 * * *'
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -44,7 +44,15 @@ jobs:
             git push
           fi
 
-      - name: Generate Pulsar Ridgeline SVGs
+      - name: Cache Pulsar Languages
+        uses: actions/cache@v4
+        with:
+          path: .cache/pulsar
+          key: pulsar-languages-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            pulsar-languages-${{ runner.os }}-
+
+      - name: Generate Pulsar Telemetry SVGs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node .github/scripts/generate-pulsar.mjs

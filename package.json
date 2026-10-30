@@ -1,0 +1,13 @@
+{
+  "name": "cyojkoy-profile",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "pregenerate": "node --check .github/scripts/generate-pulsar.mjs",
+    "generate": "node --env-file-if-exists=.env .github/scripts/generate-pulsar.mjs",
+    "pretest": "pnpm run generate",
+    "test": "node -e \"import('node:fs/promises').then(fs => fs.access('dist/pulsar-dark.svg')).then(() => console.log('✓ Pulsar SVG validated')).catch(() => process.exit(1))\"",
+    "preview": "pnpm run generate && node -e \"import('node:child_process').then(cp => cp.exec(process.platform === 'win32' ? 'start dist/pulsar-dark.svg' : 'open dist/pulsar-dark.svg'))\""
+  }
+}
