@@ -16,12 +16,8 @@
           "desc": "Collection of native Windhawk modules for Windows shell customization."
         },
         {
-          "name": "CthulhuCursor",
-          "desc": "Complete animated Cthulhu-themed Windows cursor scheme."
-        },
-        {
-          "name": "GothicSigilCursor",
-          "desc": "Gothic sigil cursor assets and styling presets for Windows."
+          "name": "Yoko-Paint.NET-Plugins",
+          "desc": "Collection of Paint.NET plugins for image editing and workflow customization."
         }
       ]
     },
