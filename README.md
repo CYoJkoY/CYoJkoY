@@ -30,6 +30,7 @@
   <a href="https://github.com/CYoJkoY/CapsLock-"><img src="./pins/CapsLock-.svg?v=9beb30db" alt="CapsLock-" width="390" /></a>
   <a href="https://github.com/CYoJkoY/extras-"><img src="./pins/extras-.svg?v=f91a335e" alt="extras-" width="390" /></a>
   <a href="https://github.com/CYoJkoY/Yoko-Windhawk-Mods"><img src="./pins/Yoko-Windhawk-Mods.svg?v=bd9b6371" alt="Yoko-Windhawk-Mods" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Yoko-Paint.NET-Plugins"><img src="./pins/Yoko-Paint.NET-Plugins.svg?v=995a7410" alt="Yoko-Paint.NET-Plugins" width="390" /></a>
 </p>
 
 #### Web Extensions & Developer Tools
