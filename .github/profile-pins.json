@@ -14,10 +14,6 @@
         {
           "name": "Yoko-Windhawk-Mods",
           "desc": "Collection of native Windhawk modules for Windows shell customization."
-        },
-        {
-          "name": "Yoko-Paint.NET-Plugins",
-          "desc": "Collection of Paint.NET plugins for image editing and workflow customization."
         }
       ]
     },
