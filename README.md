@@ -36,7 +36,7 @@
 
 <p align="left">
   <a href="https://github.com/CYoJkoY/AiGithubIngest"><img src="./pins/AiGithubIngest.svg?v=cd3b2bc0" alt="AiGithubIngest" width="390" /></a>
-  <a href="https://github.com/CYoJkoY/ChromiumCloudSync"><img src="./pins/ChromiumCloudSync.svg?v=a6391ecb" alt="ChromiumCloudSync" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/ChromiumCloudSync"><img src="./pins/ChromiumCloudSync.svg?v=96f54da0" alt="ChromiumCloudSync" width="390" /></a>
   <a href="https://github.com/CYoJkoY/Neo-Godot-Tools"><img src="./pins/Neo-Godot-Tools.svg?v=56d1a59c" alt="Neo-Godot-Tools" width="390" /></a>
   <a href="https://github.com/CYoJkoY/Yoko-ScriptCat-Scripts"><img src="./pins/Yoko-ScriptCat-Scripts.svg?v=ed5d3000" alt="Yoko-ScriptCat-Scripts" width="390" /></a>
 </p>
