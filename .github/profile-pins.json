@@ -1,7 +1,7 @@
 {
   "categories": [
     {
-      "name": "Desktop & System Infrastructure",
+      "name": "Desktop & system",
       "repos": [
         {
           "name": "CapsLock-",
@@ -18,7 +18,7 @@
       ]
     },
     {
-      "name": "Web Extensions & Developer Tools",
+      "name": "Extensions & developer tools",
       "repos": [
         {
           "name": "AiGithubIngest",
@@ -39,7 +39,7 @@
       ]
     },
     {
-      "name": "Modding & Game Ecosystem",
+      "name": "Mods & games",
       "repos": [
         {
           "name": "Yoko-YzTato",
@@ -68,7 +68,7 @@
       ]
     },
     {
-      "name": "Standards & Architecture",
+      "name": "References",
       "repos": [
         {
           "name": "AzSkills",

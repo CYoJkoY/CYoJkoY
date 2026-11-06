@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="240" viewBox="0 0 800 240" role="img" aria-labelledby="title desc">
+  <title id="title">CYoJkoY — tools, extensions, and mods</title>
+  <desc id="desc">An inkstone dark editorial masthead with warm paper lettering, a cinnabar rule, and a small geometric seal.</desc>
+  <rect width="800" height="240" rx="2" fill="#131416"/>
+  <path d="M32 40H714M32 200H768" stroke="#EDEAE2" stroke-opacity=".18"/>
+  <path d="M32 40H100" stroke="#C84A3B" stroke-width="2"/>
+  <g font-family="Georgia, Times New Roman, serif" fill="#EDEAE2">
+    <text x="32" y="121" font-size="62">CYoJkoY</text>
+  </g>
+  <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" fill="#A39F95">
+    <text x="34" y="162" font-size="20">Tools for the desktop. Experiments for the rest.</text>
+  </g>
+  <g transform="translate(730 22)" stroke="#C84A3B" stroke-width="2" fill="none">
+    <rect width="38" height="38" rx="1"/>
+    <path d="M9 10L19 20L29 10M19 20V29M9 29H29"/>
+  </g>
+</svg>
