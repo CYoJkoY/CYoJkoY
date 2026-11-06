@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
-import { renderCalendar, validateCalendar } from './generate-commit-activity.mjs';
+import { contributionLevel, contributionThresholds, renderCalendar, validateCalendar } from './generate-commit-activity.mjs';
 
 const run = promisify(execFile);
 const script = fileURLToPath(new URL('./generate-commit-activity.mjs', import.meta.url));
@@ -56,8 +56,8 @@ test('aligns weekday labels and keeps month labels on one row without duplicates
   const svg = renderCalendar(makeCalendar());
   const weekdayLabels = [...svg.matchAll(/<g class="weekday">([\s\S]*?)<\/g>/g)][0][1];
   assert.deepEqual([...weekdayLabels.matchAll(/<text x="24" y="(\d+)">([MWF])<\/text>/g)]
-    .map((match) => [match[2], Number(match[1])]), [['M', 153], ['W', 185], ['F', 217]]);
-  const monthLabels = [...svg.matchAll(/<text x="(\d+)" y="112" class="month">([A-Z][a-z]{2})<\/text>/g)]
+    .map((match) => [match[2], Number(match[1])]), [['M', 161], ['W', 193], ['F', 225]]);
+  const monthLabels = [...svg.matchAll(/<text x="(\d+)" y="120" class="month">([A-Z][a-z]{2})<\/text>/g)]
     .map((match) => [Number(match[1]), match[2]]);
   assert.equal(new Set(monthLabels.map(([x]) => x)).size, monthLabels.length);
   assert.deepEqual(monthLabels.map(([, month]) => month).slice(0, 3), ['Jan', 'Feb', 'Mar']);
@@ -68,9 +68,26 @@ test('places the footer rule and legend below every daily cell', () => {
   const svg = renderCalendar(makeCalendar());
   const lowestCell = Math.max(...[...svg.matchAll(/<rect class="day level-[0-4]" x="\d+" y="(\d+)"/g)]
     .map((match) => Number(match[1])));
-  assert.equal(lowestCell, 224);
-  assert.match(svg, /<path d="M24 252H\d+" stroke="#3B3935"\/>/);
-  assert.match(svg, /y="264" width="12" height="12"/);
+  assert.equal(lowestCell, 232);
+  assert.match(svg, /<path d="M24 264H\d+" stroke="#3B3935"\/>/);
+  assert.match(svg, /y="276" width="12" height="12"/);
+  assert.match(svg, /<path class="accent" d="M24 12H88"\/>/);
+  assert.match(svg, /<text class="caption" x="24" y="90">contributions over the past year<\/text>/);
+});
+
+test('keeps the moving wash behind the contribution cells', () => {
+  const svg = renderCalendar(makeCalendar());
+  assert.ok(svg.indexOf('class="wash"') < svg.indexOf('<g id="days">'));
+});
+
+test('spreads warm ink levels across the actual contribution distribution', () => {
+  const days = [1, 1, 2, 3, 4, 5, 8, 12, 20, 40, 90, 488]
+    .map((count, index) => ({ contributionCount: count, date: '2025-01-' + String(index + 1).padStart(2, '0') }));
+  const thresholds = contributionThresholds(days);
+  assert.deepEqual(thresholds, [2, 5, 20]);
+  assert.deepEqual([0, 1, 2, 3, 5, 8, 20, 21].map((count) => contributionLevel(count, thresholds)),
+    [0, 1, 1, 2, 2, 3, 3, 4]);
+  assert.deepEqual(contributionThresholds([{ contributionCount: 0 }]), [1, 1, 1]);
 });
 
 test('rejects malformed calendars before writing output', () => {
@@ -83,15 +100,15 @@ test('rejects malformed calendars before writing output', () => {
 test('handles 52 and 54 week calendars and a first-week month boundary', () => {
   const short = renderCalendar(makeCalendar('2025-01-05', 52));
   assert.equal((short.match(/class="day level-[0-4]"/g) ?? []).length, 364);
-  assert.match(short, /viewBox="0 0 900 296"/);
+  assert.match(short, /viewBox="0 0 900 304"/);
 
   const long = renderCalendar(makeCalendar('2025-01-05', 54));
   assert.equal((long.match(/class="day level-[0-4]"/g) ?? []).length, 378);
-  assert.match(long, /viewBox="0 0 932 296"/);
+  assert.match(long, /viewBox="0 0 932 304"/);
 
   const boundary = renderCalendar(makeCalendar('2025-01-26', 53));
-  assert.match(boundary, /<text x="48" y="112" class="month">Feb<\/text>/);
-  assert.doesNotMatch(boundary, /<text x="48" y="112" class="month">Jan<\/text>/);
+  assert.match(boundary, /<text x="48" y="120" class="month">Feb<\/text>/);
+  assert.doesNotMatch(boundary, /<text x="48" y="120" class="month">Jan<\/text>/);
 });
 
 test('renders an empty contribution year with level zero cells only', () => {
@@ -126,8 +143,8 @@ test('places partial first and last weeks on their real weekday rows', () => {
     .map((match) => [Number(match[1]), Number(match[2])]);
   assert.equal(weeks.length, 53);
   assert.equal(cells.length, 367);
-  assert.deepEqual(cells[0], [48, 176]);
-  assert.deepEqual(cells.at(-1), [48 + 52 * 16, 128 + days.at(-1).weekday * 16]);
+  assert.deepEqual(cells[0], [48, 184]);
+  assert.deepEqual(cells.at(-1), [48 + 52 * 16, 136 + days.at(-1).weekday * 16]);
   assert.equal(new Set(cells.map(([x, y]) => x + ':' + y)).size, cells.length);
 });
 
@@ -142,8 +159,8 @@ test('the published asset contains a complete calendar whose counts match its to
   assert.equal(days[0][2], title[2]);
   assert.equal(days.at(-1)[2], title[3]);
   assert.equal(days.reduce((sum, day) => sum + Number(day[1]), 0), Number(title[1].replaceAll(',', '')));
-  assert.equal(new Set([...svg.matchAll(/<text x="(\d+)" y="112" class="month">/g)].map((match) => match[1])).size,
-    [...svg.matchAll(/<text x="\d+" y="112" class="month">/g)].length);
+  assert.equal(new Set([...svg.matchAll(/<text x="(\d+)" y="120" class="month">/g)].map((match) => match[1])).size,
+    [...svg.matchAll(/<text x="\d+" y="120" class="month">/g)].length);
   assert.equal(staticSvg.replace(/<style>[\s\S]*?<\/style>/, ''), svg.replace(/<style>[\s\S]*?<\/style>/, ''));
   assert.doesNotMatch(staticSvg, /@keyframes|animation:/);
 });

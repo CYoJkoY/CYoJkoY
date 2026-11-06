@@ -38,6 +38,22 @@ export function validateCalendar(calendar) {
   }
 }
 
+export function contributionThresholds(days) {
+  const positive = days.map((day) => day.contributionCount).filter((count) => count > 0)
+    .sort((left, right) => left - right);
+  if (positive.length === 0) return [1, 1, 1];
+  const at = (fraction) => positive[Math.min(positive.length - 1, Math.ceil(fraction * positive.length) - 1)];
+  return [at(0.25), at(0.5), at(0.75)];
+}
+
+export function contributionLevel(count, thresholds) {
+  if (count === 0) return 0;
+  if (count <= thresholds[0]) return 1;
+  if (count <= thresholds[1]) return 2;
+  if (count <= thresholds[2]) return 3;
+  return 4;
+}
+
 export function renderCalendar(calendar, { animate = true } = {}) {
   validateCalendar(calendar);
   const { weeks } = calendar;
@@ -47,17 +63,17 @@ export function renderCalendar(calendar, { animate = true } = {}) {
   const cell = 12;
   const pitch = 16;
   const left = 48;
-  const top = 128;
+  const top = 136;
   const chartWidth = weeks.length * pitch - 4;
   const width = Math.max(640, left + chartWidth + 24);
-  const height = 296;
+  const height = 304;
   const chartHeight = 7 * pitch - 4;
-  const max = Math.max(1, ...days.map((day) => day.contributionCount));
+  const thresholds = contributionThresholds(days);
   const cells = [];
   const startMonth = days[0].date.slice(0, 7);
   const firstWeekHasNewMonth = weeks[0].contributionDays
     .some((day) => day.date.endsWith('-01') && day.date.slice(0, 7) !== startMonth);
-  const months = firstWeekHasNewMonth ? [] : ['<text x="' + left + '" y="112" class="month">' +
+  const months = firstWeekHasNewMonth ? [] : ['<text x="' + left + '" y="120" class="month">' +
     MONTHS[Number(startMonth.slice(5)) - 1] + '</text>'];
   let previousMonth = startMonth;
   let lastMonthX = firstWeekHasNewMonth ? -Infinity : left;
@@ -66,13 +82,13 @@ export function renderCalendar(calendar, { animate = true } = {}) {
     const firstOfMonth = week.contributionDays
       .find((day) => day.date.slice(0, 7) !== previousMonth && day.date.endsWith('-01'));
     if (firstOfMonth && x + 22 <= width - 12 && x - lastMonthX >= 40) {
-      months.push('<text x="' + x + '" y="112" class="month">' +
+      months.push('<text x="' + x + '" y="120" class="month">' +
         MONTHS[Number(firstOfMonth.date.slice(5, 7)) - 1] + '</text>');
       lastMonthX = x;
     }
     previousMonth = week.contributionDays.at(-1).date.slice(0, 7);
     for (const day of week.contributionDays) {
-      const level = day.contributionCount === 0 ? 0 : Math.ceil(day.contributionCount / max * 4);
+      const level = contributionLevel(day.contributionCount, thresholds);
       cells.push('<rect class="day level-' + level + '" x="' + x + '" y="' + (top + day.weekday * pitch) +
         '" width="' + cell + '" height="' + cell + '" rx="2"><title>' + day.contributionCount +
         ' contributions on ' + day.date + '</title></rect>');
@@ -82,7 +98,7 @@ export function renderCalendar(calendar, { animate = true } = {}) {
     '<text x="24" y="' + (top + entry[1] * pitch + 9) + '">' + entry[0] + '</text>').join('');
   const legendX = width - 190;
   const legend = Array.from({ length: 5 }, (_, level) =>
-    '<rect class="level-' + level + '" x="' + (legendX + 30 + level * 16) + '" y="264" width="12" height="12" rx="2"/>'
+    '<rect class="level-' + level + '" x="' + (legendX + 30 + level * 16) + '" y="276" width="12" height="12" rx="2"/>'
   ).join('');
   return '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height +
     '" viewBox="0 0 ' + width + ' ' + height + '" role="img" aria-labelledby="title desc">\n' +
@@ -107,19 +123,19 @@ export function renderCalendar(calendar, { animate = true } = {}) {
     '<clipPath id="calendar"><rect x="' + left + '" y="' + top + '" width="' + chartWidth +
     '" height="' + chartHeight + '"/></clipPath></defs>\n' +
     '<rect class="frame" x=".5" y=".5" width="' + (width - 1) + '" height="' + (height - 1) + '" rx="2"/>\n' +
-    '<path class="accent" d="M24 1H88"/>\n' +
+    '<path class="accent" d="M24 12H88"/>\n' +
     '<text class="eyebrow" x="24" y="28">CONTRIBUTION ACTIVITY</text>\n' +
     '<text class="total" x="24" y="64">' + number + '</text>\n' +
-    '<text class="caption" x="24" y="84">contributions over the past year</text>\n' +
+    '<text class="caption" x="24" y="90">contributions over the past year</text>\n' +
     months.join('') + '\n' +
-    '<g class="weekday">' + weekdays + '</g>\n' +
-    '<g id="days">' + cells.join('') + '</g>\n' +
     '<g clip-path="url(#calendar)"><rect class="wash" x="' + left + '" y="' + top +
     '" width="180" height="' + chartHeight + '" fill="url(#wash)"/></g>\n' +
-    '<path d="M24 252H' + (width - 24) + '" stroke="#3B3935"/>\n' +
-    '<text class="caption" x="24" y="276">' + range + '</text>\n' +
-    '<g class="caption"><text x="' + legendX + '" y="274">Less</text>' + legend +
-    '<text x="' + (width - 72) + '" y="274">More</text></g>\n' +
+    '<g class="weekday">' + weekdays + '</g>\n' +
+    '<g id="days">' + cells.join('') + '</g>\n' +
+    '<path d="M24 264H' + (width - 24) + '" stroke="#3B3935"/>\n' +
+    '<text class="caption" x="24" y="288">' + range + '</text>\n' +
+    '<g class="caption"><text x="' + legendX + '" y="286">Less</text>' + legend +
+    '<text x="' + (width - 72) + '" y="286">More</text></g>\n' +
     '</svg>\n';
 }
 
