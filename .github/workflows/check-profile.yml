@@ -19,7 +19,9 @@ jobs:
           node-version: 22
       - run: node --check .github/scripts/update-readme.mjs
       - run: node --check .github/scripts/generate-commit-activity.mjs
+      - run: node --check .github/scripts/verify-profile-freshness.mjs
       - run: node --test .github/scripts/generate-commit-activity.test.mjs
+      - run: node --test .github/scripts/verify-profile-freshness.test.mjs
       - run: node --test .github/scripts/update-readme.test.mjs
   freshness:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -37,8 +39,7 @@ jobs:
           set -euo pipefail
           node .github/scripts/update-readme.mjs
           GITHUB_ACTIVITY_OUTPUT="$RUNNER_TEMP/commit-activity.svg" node .github/scripts/generate-commit-activity.mjs
-          cmp "$RUNNER_TEMP/commit-activity.svg" assets/commit-activity.svg
-          cmp "$RUNNER_TEMP/commit-activity-static.svg" assets/commit-activity-static.svg
+          node .github/scripts/verify-profile-freshness.mjs assets/commit-activity.svg "$RUNNER_TEMP/commit-activity.svg"
           if ! git diff --quiet -- README.md pins/; then
             git diff --stat -- README.md pins/
             echo "Published profile data is stale; the scheduled refresh did not land." >&2
