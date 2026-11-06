@@ -11,6 +11,41 @@ const PINS_DIR = path.resolve('pins');
 const START_MARKER = '<!-- REPO_LIST:START -->';
 const END_MARKER = '<!-- REPO_LIST:END -->';
 
+const LANG_COLORS = {
+  AutoHotkey: '#7baed8',
+  'C++': '#f34b7d',
+  CSS: '#aa80d1',
+  GDScript: '#6d98ba',
+  HTML: '#e9795b',
+  Java: '#d99138',
+  JavaScript: '#f1e05a',
+  PowerShell: '#7c9bdb',
+  Python: '#70a5e3',
+  Rust: '#dea584',
+  TypeScript: '#5b9ce6',
+};
+
+function languageColor(language) {
+  if (Object.hasOwn(LANG_COLORS, language)) return LANG_COLORS[language];
+
+  let hash = 5381;
+  for (const character of language) hash = (hash * 33) ^ character.charCodeAt(0);
+  const hue = Math.abs(hash) % 360;
+  const saturation = 52;
+  const lightness = 62;
+  const chroma = (1 - Math.abs(2 * lightness / 100 - 1)) * saturation / 100;
+  const hueSection = hue / 60;
+  const secondary = chroma * (1 - Math.abs(hueSection % 2 - 1));
+  const [red, green, blue] = hueSection < 1 ? [chroma, secondary, 0]
+    : hueSection < 2 ? [secondary, chroma, 0]
+      : hueSection < 3 ? [0, chroma, secondary]
+        : hueSection < 4 ? [0, secondary, chroma]
+          : hueSection < 5 ? [secondary, 0, chroma]
+            : [chroma, 0, secondary];
+  const offset = lightness / 100 - chroma / 2;
+  return `#${[red, green, blue].map((channel) => Math.round((channel + offset) * 255).toString(16).padStart(2, '0')).join('')}`;
+}
+
 function escapeXml(str) {
   return String(str || '').replace(/[<>&'"]/g, (c) => {
     switch (c) {
@@ -47,7 +82,7 @@ function wrapText(text, maxChars = 44) {
 function generateCardSvg(repo) {
   const name = escapeXml(repo.name);
   const lang = repo.language || '';
-  const langColor = '#537B65';
+  const langColor = languageColor(lang);
   const stars = repo.stargazers_count ?? 0;
   const forks = repo.forks_count ?? 0;
   const desc = repo.customDesc || repo.description || 'No description provided.';
