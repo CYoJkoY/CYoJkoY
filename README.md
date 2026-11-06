@@ -45,7 +45,7 @@ I make Windows utilities, browser extensions, and game mods. This is a selection
 ## Commit activity
 
 <p align="left">
-  <img src="https://raw.githubusercontent.com/CYoJkoY/CYoJkoY/output/pulsar-dark.svg" alt="Animated yearly commit activity graph" width="860" />
+  <img src="./assets/commit-activity.svg" alt="Animated yearly commit activity graph" width="860" />
 </p>
 
 [All repositories](https://github.com/CYoJkoY?tab=repositories)

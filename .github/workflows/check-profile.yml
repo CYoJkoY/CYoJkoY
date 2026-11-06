@@ -14,5 +14,6 @@ jobs:
         with:
           node-version: 20
       - run: node --check .github/scripts/update-readme.mjs
-      - run: node --check .github/scripts/generate-pulsar.mjs
+      - run: node --check .github/scripts/generate-commit-activity.mjs
+      - run: node --test .github/scripts/generate-commit-activity.test.mjs
       - run: node --test .github/scripts/update-readme.test.mjs
