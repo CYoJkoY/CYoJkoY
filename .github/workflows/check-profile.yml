@@ -1,0 +1,17 @@
+name: Check profile
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node --check .github/scripts/update-readme.mjs
+      - run: node --test .github/scripts/update-readme.test.mjs
