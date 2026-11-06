@@ -47,6 +47,7 @@
   <a href="https://github.com/CYoJkoY/Yoko-YzTato"><img src="./pins/Yoko-YzTato.svg?v=e6bc2ab8" alt="Yoko-YzTato" width="390" /></a>
   <a href="https://github.com/CYoJkoY/Yoko-NewContentLoader"><img src="./pins/Yoko-NewContentLoader.svg?v=63f572e5" alt="Yoko-NewContentLoader" width="390" /></a>
   <a href="https://github.com/CYoJkoY/Yoko-MoreStatsContainer"><img src="./pins/Yoko-MoreStatsContainer.svg?v=7b22f13d" alt="Yoko-MoreStatsContainer" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/YokoAndCave-Fantasy"><img src="./pins/YokoAndCave-Fantasy.svg?v=668bc5ab" alt="YokoAndCave-Fantasy" width="390" /></a>
   <a href="https://github.com/CYoJkoY/Yoko-DebugMenu"><img src="./pins/Yoko-DebugMenu.svg?v=9f5f77dc" alt="Yoko-DebugMenu" width="390" /></a>
 </p>
 
