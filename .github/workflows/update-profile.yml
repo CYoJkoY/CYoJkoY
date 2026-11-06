@@ -1,8 +1,9 @@
-name: Sync Repos to Profile README
+name: Refresh profile
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    # Daily at 08:17 Asia/Shanghai, away from the top-of-hour runner queue.
+    - cron: '17 0 * * *'
   workflow_dispatch:
   push:
     branches:
@@ -10,53 +11,53 @@ on:
     paths:
       - '.github/profile-pins.json'
       - '.github/scripts/**'
+      - '.github/workflows/update-profile.yml'
 
 permissions:
   contents: write
 
+concurrency:
+  group: refresh-profile
+  cancel-in-progress: false
+
 jobs:
-  sync-readme:
+  refresh-profile:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
 
-      - name: Run Sync Script
+      - name: Verify scripts
+        run: |
+          node --check .github/scripts/update-readme.mjs
+          node --check .github/scripts/generate-commit-activity.mjs
+
+      - name: Refresh profile data
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node .github/scripts/update-readme.mjs
+        run: |
+          node .github/scripts/update-readme.mjs
+          node .github/scripts/generate-commit-activity.mjs
 
-      - name: Commit and Push README and Pins
+      - name: Verify generated profile
+        run: |
+          node --test .github/scripts/generate-commit-activity.test.mjs
+          node --test .github/scripts/update-readme.test.mjs
+
+      - name: Commit and push profile updates
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md pins/
-
+          git add README.md pins/ assets/
           if git diff --staged --quiet; then
-            echo "README and SVG pins are up to date."
+            echo "Profile is up to date."
           else
-            git commit -m "chore(profile): sync categorized pin cards [skip ci]"
-            git push
-          fi
-
-      - name: Generate Commit Activity SVG
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node .github/scripts/generate-commit-activity.mjs
-
-      - name: Commit and Push Commit Activity
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/commit-activity.svg
-          if git diff --staged --quiet; then
-            echo "Commit activity graphic is up to date."
-          else
-            git commit -m "chore(profile): refresh commit activity [skip ci]"
+            git commit -m "chore(profile): refresh profile data [skip ci]"
             git push
           fi

@@ -6,7 +6,7 @@
   "scripts": {
     "pregenerate": "node --check .github/scripts/generate-commit-activity.mjs",
     "generate": "node --env-file-if-exists=.env .github/scripts/generate-commit-activity.mjs",
-    "test": "node --test .github/scripts/generate-commit-activity.test.mjs",
+    "test": "node --test .github/scripts/generate-commit-activity.test.mjs .github/scripts/update-readme.test.mjs",
     "preview": "pnpm run generate && node -e \"import('node:child_process').then(cp => cp.exec(process.platform === 'win32' ? 'start assets/commit-activity.svg' : 'open assets/commit-activity.svg'))\""
   }
 }

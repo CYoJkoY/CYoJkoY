@@ -3,16 +3,19 @@ on:
   pull_request:
   push:
     branches: [main]
+  schedule:
+    - cron: '43 0 * * *'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
       - run: node --check .github/scripts/update-readme.mjs
       - run: node --check .github/scripts/generate-commit-activity.mjs
       - run: node --test .github/scripts/generate-commit-activity.test.mjs
