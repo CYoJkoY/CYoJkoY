@@ -360,14 +360,14 @@ function buildConsoleSvg(calendar, languageData, theme) {
   const sweepStartX = leftMargin - 50;
 
   const isDark = theme === 'dark';
-  const bgColor = isDark ? '#0d1117' : '#ffffff';
-  const borderColor = isDark ? '#30363d' : '#d0d7de';
-  const strokeColor = isDark ? '#f0f6fc' : '#1f2328';
-  const axisColor = isDark ? '#8b949e' : '#656d76';
-  const gridDim = isDark ? '#21262d' : '#eaeef2';
-  const accentColor = isDark ? '#2f81f7' : '#0969da';
-  const beamTailColor = isDark ? '#58a6ff' : '#0969da';
-  const otherSegmentColor = isDark ? '#30363d' : '#d0d7de';
+  const bgColor = isDark ? '#131416' : '#ffffff';
+  const borderColor = isDark ? '#3b3935' : '#d0d7de';
+  const strokeColor = isDark ? '#edeae2' : '#1f2328';
+  const axisColor = isDark ? '#a39f95' : '#656d76';
+  const gridDim = isDark ? '#282729' : '#eaeef2';
+  const accentColor = isDark ? '#c84a3b' : '#0969da';
+  const beamTailColor = isDark ? '#537b65' : '#0969da';
+  const otherSegmentColor = isDark ? '#3b3935' : '#d0d7de';
 
   const weeks = calendar.weeks.slice(-46);
   const langMeta = languageData.weeklyMeta.slice(-46);

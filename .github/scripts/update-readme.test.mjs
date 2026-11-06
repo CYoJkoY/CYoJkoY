@@ -8,7 +8,7 @@ import { test } from 'node:test';
 
 const source = (await fs.readFile(new URL('./update-readme.mjs', import.meta.url), 'utf8'))
   .replace(/^import .*;$/gm, '')
-  .replace(/run\(\);\s*$/, 'globalThis.profile = { run, wrapText };');
+  .replace(/run\(\);\s*$/, 'globalThis.profile = { run, wrapText, generateCardSvg };');
 
 async function fixture(t, fetcher, config = { categories: [{ name: 'Tools', repos: ['Keep'] }] }) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'profile-test-'));
@@ -67,4 +67,14 @@ test('repositories beyond the first API page remain listed', async (t) => {
   await f.run();
   assert.equal(calls, 2);
   assert.match(await fs.readFile(path.join(f.root, 'README.md'), 'utf8'), /Keep.svg/);
+});
+
+test('language dots use distinct brand colors for common repository languages', async (t) => {
+  const f = await fixture(t, success);
+  const typescript = f.generateCardSvg({ ...repo, language: 'TypeScript' });
+  const javascript = f.generateCardSvg({ ...repo, language: 'JavaScript' });
+  const dotColor = (svg) => svg.match(/<circle cx="5" cy="8" r="5" fill="(#[0-9a-f]+)"/)[1];
+  assert.equal(dotColor(typescript), '#5b9ce6');
+  assert.equal(dotColor(javascript), '#f1e05a');
+  assert.notEqual(dotColor(typescript), dotColor(javascript));
 });
