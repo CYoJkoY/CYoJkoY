@@ -42,10 +42,13 @@ I make Windows utilities, browser extensions, and game mods. This is a selection
 
 <!-- REPO_LIST:END -->
 
-## Commit activity
+## Contribution activity
 
 <p align="left">
-  <img src="./assets/commit-activity.svg" alt="Animated yearly commit activity graph" width="860" />
+  <picture>
+    <source media="(prefers-reduced-motion: reduce)" srcset="./assets/commit-activity-static.svg" />
+    <img src="./assets/commit-activity.svg" alt="GitHub contribution calendar for the past year" width="860" />
+  </picture>
 </p>
 
 [All repositories](https://github.com/CYoJkoY?tab=repositories)
