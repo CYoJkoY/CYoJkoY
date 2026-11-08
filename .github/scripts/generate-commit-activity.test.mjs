@@ -201,6 +201,37 @@ test('CLI fails without a token and writes the SVG through a mocked API', async 
   }
 });
 
+test('CLI uses daily counts when the API total is stale', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'profile-calendar-'));
+  const output = join(directory, 'calendar.svg');
+  const calendar = makeCalendar();
+  calendar.totalContributions += 1;
+  const server = createServer((request, response) => {
+    response.setHeader('Content-Type', 'application/json');
+    response.end(JSON.stringify({
+      data: { user: { contributionsCollection: { contributionCalendar: calendar } } }
+    }));
+  });
+  try {
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    const { port } = server.address();
+    await run(process.execPath, [script], {
+      env: {
+        ...process.env,
+        GITHUB_TOKEN: 'test-token',
+        GITHUB_GRAPHQL_URL: 'http://127.0.0.1:' + port,
+        GITHUB_ACTIVITY_OUTPUT: output
+      }
+    });
+    const svg = await readFile(output, 'utf8');
+    assert.match(svg, new RegExp('<title id="title">' + calendar.weeks.flatMap((week) => week.contributionDays)
+      .reduce((total, day) => total + day.contributionCount, 0).toLocaleString('en-US') + ' GitHub contributions'));
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
 test('a failed API request leaves the previous graphic intact', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'profile-calendar-'));
   const output = join(directory, 'calendar.svg');

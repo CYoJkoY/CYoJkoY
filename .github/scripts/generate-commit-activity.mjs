@@ -54,6 +54,13 @@ export function contributionLevel(count, thresholds) {
   return 4;
 }
 
+function normalizeCalendar(calendar) {
+  const totalContributions = calendar.weeks
+    .flatMap((week) => week.contributionDays)
+    .reduce((total, day) => total + day.contributionCount, 0);
+  return { ...calendar, totalContributions };
+}
+
 export function renderCalendar(calendar, { animate = true } = {}) {
   validateCalendar(calendar);
   const { weeks } = calendar;
@@ -168,8 +175,9 @@ export async function generate() {
     throw new Error('GitHub GraphQL errors: ' + JSON.stringify(payload.errors));
   }
   const calendar = payload.data?.user?.contributionsCollection?.contributionCalendar;
-  const svg = renderCalendar(calendar);
-  const staticSvg = renderCalendar(calendar, { animate: false });
+  const normalizedCalendar = normalizeCalendar(calendar);
+  const svg = renderCalendar(normalizedCalendar);
+  const staticSvg = renderCalendar(normalizedCalendar, { animate: false });
   const temporary = new URL(output.href + '.tmp');
   const staticTemporary = new URL(staticOutput.href + '.tmp');
   try {
