@@ -19,8 +19,10 @@ jobs:
           node-version: 22
       - run: node --check .github/scripts/update-readme.mjs
       - run: node --check .github/scripts/generate-commit-activity.mjs
+      - run: node --check .github/scripts/generate-activity-details.mjs
       - run: node --check .github/scripts/verify-profile-freshness.mjs
       - run: node --test .github/scripts/generate-commit-activity.test.mjs
+      - run: node --test .github/scripts/generate-activity-details.test.mjs
       - run: node --test .github/scripts/verify-profile-freshness.test.mjs
       - run: node --test .github/scripts/update-readme.test.mjs
   freshness:
@@ -39,7 +41,12 @@ jobs:
           set -euo pipefail
           node .github/scripts/update-readme.mjs
           GITHUB_ACTIVITY_OUTPUT="$RUNNER_TEMP/commit-activity.svg" node .github/scripts/generate-commit-activity.mjs
+          GITHUB_ACTIVITY_CALENDAR="$RUNNER_TEMP/commit-activity.svg" GITHUB_ACTIVITY_DETAILS_OUTPUT="$RUNNER_TEMP/activity-details.svg" node .github/scripts/generate-activity-details.mjs
           node .github/scripts/verify-profile-freshness.mjs assets/commit-activity.svg "$RUNNER_TEMP/commit-activity.svg"
+          if ! cmp -s assets/activity-details.svg "$RUNNER_TEMP/activity-details.svg"; then
+            echo "Published activity details are stale; the scheduled refresh did not land." >&2
+            exit 1
+          fi
           if ! git diff --quiet -- README.md pins/; then
             git diff --stat -- README.md pins/
             echo "Published profile data is stale; the scheduled refresh did not land." >&2

@@ -50,4 +50,8 @@ I make Windows utilities, browser extensions, and game mods. This is a selection
   </picture>
 </p>
 
+<p align="left">
+  <img src="./assets/activity-details.svg" alt="Recent commits and yearly contribution statistics" width="915" />
+</p>
+
 [All repositories](https://github.com/CYoJkoY?tab=repositories)
