@@ -37,6 +37,7 @@ jobs:
         run: |
           node --check .github/scripts/update-readme.mjs
           node --check .github/scripts/generate-commit-activity.mjs
+          node --check .github/scripts/generate-activity-details.mjs
 
       - name: Refresh profile data
         env:
@@ -44,10 +45,12 @@ jobs:
         run: |
           node .github/scripts/update-readme.mjs
           node .github/scripts/generate-commit-activity.mjs
+          node .github/scripts/generate-activity-details.mjs
 
       - name: Verify generated profile
         run: |
           node --test .github/scripts/generate-commit-activity.test.mjs
+          node --test .github/scripts/generate-activity-details.test.mjs
           node --test .github/scripts/update-readme.test.mjs
 
       - name: Commit and push profile updates

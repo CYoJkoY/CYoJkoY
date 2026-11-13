@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "pregenerate": "node --check .github/scripts/generate-commit-activity.mjs",
+    "pregenerate": "node --check .github/scripts/generate-commit-activity.mjs && node --check .github/scripts/generate-activity-details.mjs",
     "generate": "node --env-file-if-exists=.env .github/scripts/generate-commit-activity.mjs",
-    "test": "node --test .github/scripts/generate-commit-activity.test.mjs .github/scripts/update-readme.test.mjs",
+    "generate:details": "node --env-file-if-exists=.env .github/scripts/generate-activity-details.mjs",
+    "test": "node --test .github/scripts/generate-commit-activity.test.mjs .github/scripts/generate-activity-details.test.mjs .github/scripts/update-readme.test.mjs",
     "preview": "pnpm run generate && node -e \"import('node:child_process').then(cp => cp.exec(process.platform === 'win32' ? 'start assets/commit-activity.svg' : 'open assets/commit-activity.svg'))\""
   }
 }
