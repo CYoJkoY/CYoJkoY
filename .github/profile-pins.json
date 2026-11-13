@@ -21,10 +21,6 @@
       "name": "Extensions & developer tools",
       "repos": [
         {
-          "name": "AiGithubIngest",
-          "desc": "Client-side extension mounting GitHub repositories directly into LLM chats."
-        },
-        {
           "name": "ChromiumCloudSync",
           "desc": "Lightweight Chromium sync for tabs, bookmarks, and extensions via Gist."
         },
