@@ -18,7 +18,6 @@ I make Windows utilities, browser extensions, and game mods. This is a selection
 #### Extensions & developer tools
 
 <p align="left">
-  <a href="https://github.com/CYoJkoY/AiGithubIngest"><img src="./pins/AiGithubIngest.svg?v=9f7f0c1c" alt="AiGithubIngest" width="390" /></a>
   <a href="https://github.com/CYoJkoY/ChromiumCloudSync"><img src="./pins/ChromiumCloudSync.svg?v=4f8dfec3" alt="ChromiumCloudSync" width="390" /></a>
   <a href="https://github.com/CYoJkoY/Neo-Godot-Tools"><img src="./pins/Neo-Godot-Tools.svg?v=1a540336" alt="Neo-Godot-Tools" width="390" /></a>
   <a href="https://github.com/CYoJkoY/Yoko-ScriptCat-Scripts"><img src="./pins/Yoko-ScriptCat-Scripts.svg?v=e21f6ab8" alt="Yoko-ScriptCat-Scripts" width="390" /></a>
