@@ -19,13 +19,14 @@ async function fixture(t, fetcher, config = { categories: [{ name: 'Tools', repo
   await fs.writeFile(path.join(root, 'README.md'), 'Intro\n<!-- REPO_LIST:START -->old<!-- REPO_LIST:END -->\nEnd');
   await fs.writeFile(path.join(root, 'pins/Stale.svg'), 'old');
   await fs.writeFile(path.join(root, 'pins/notes.txt'), 'keep');
+  const errors = [];
   const context = vm.createContext({
     fs, crypto, path: { ...path, resolve: (...parts) => path.resolve(root, ...parts) },
     process: { env: {}, exit: () => { throw new Error('Sync failed'); } },
-    fetch: fetcher, console: { log() {}, error() {} },
+    fetch: fetcher, console: { log() {}, error: (...args) => errors.push(args.map(String).join(' ')) },
   });
   vm.runInContext(source, context);
-  return { root, ...context.profile };
+  return { root, errors, ...context.profile };
 }
 
 const repo = { name: 'Keep', description: 'A complete short sentence.', html_url: 'https://github.com/CYoJkoY/Keep', language: 'JavaScript' };
@@ -44,11 +45,30 @@ test('sync replaces stale SVGs while preserving other files and README prose', a
   assert.match(svg, /#1B1C20/);
 });
 
-test('configured repositories that no longer qualify leave no cards', async (t) => {
-  const f = await fixture(t, async () => ({ ok: true, json: async () => [{ ...repo, archived: true }] }));
-  await fs.writeFile(path.join(f.root, 'pins/Keep.svg'), 'old');
-  await f.run();
-  assert.deepEqual(await fs.readdir(path.join(f.root, 'pins')), ['notes.txt']);
+test('explicit pins generate cards for public forks and archived repositories', async (t) => {
+  for (const flags of [{ fork: true }, { archived: true }, { fork: true, archived: true }]) {
+    await t.test(JSON.stringify(flags), async (t) => {
+      const f = await fixture(t, async () => ({ ok: true, json: async () => [{ ...repo, ...flags }] }),
+        { categories: [{ name: 'Tools', repos: [{ name: 'keep', desc: 'Explicit description.' }] }] });
+      await f.run();
+      assert.match(await fs.readFile(path.join(f.root, 'pins/Keep.svg'), 'utf8'), /Explicit description/);
+      assert.match(await fs.readFile(path.join(f.root, 'README.md'), 'utf8'), /Keep.svg\?v=/);
+    });
+  }
+});
+
+test('unavailable configured pins fail with names and preserve all published files', async (t) => {
+  for (const unavailable of [[], [{ ...repo, name: 'Missing', private: true }]]) {
+    await t.test(JSON.stringify(unavailable), async (t) => {
+      const f = await fixture(t, async () => ({ ok: true, json: async () => [repo, ...unavailable] }),
+        { categories: [{ name: 'Tools', repos: ['Keep', { name: 'Missing' }] }] });
+      await assert.rejects(f.run(), /Sync failed/);
+      assert.match(f.errors.join('\n'), /Configured repositories.*Missing/);
+      assert.equal(await fs.readFile(path.join(f.root, 'pins/Stale.svg'), 'utf8'), 'old');
+      assert.deepEqual((await fs.readdir(path.join(f.root, 'pins'))).sort(), ['Stale.svg', 'notes.txt']);
+      assert.match(await fs.readFile(path.join(f.root, 'README.md'), 'utf8'), /START -->old<!-- REPO_LIST:END/);
+    });
+  }
 });
 
 test('network failure preserves previous cards and README', async (t) => {
