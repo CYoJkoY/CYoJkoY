@@ -13,7 +13,7 @@ I make Windows utilities, browser extensions, and game mods. This is a selection
   <a href="https://github.com/CYoJkoY/CapsLock-"><img src="./pins/CapsLock-.svg?v=4ff627a5" alt="CapsLock-" width="390" /></a>
   <a href="https://github.com/CYoJkoY/extras-"><img src="./pins/extras-.svg?v=73674758" alt="extras-" width="390" /></a>
   <a href="https://github.com/CYoJkoY/Yoko-Windhawk-Mods"><img src="./pins/Yoko-Windhawk-Mods.svg?v=e85aeade" alt="Yoko-Windhawk-Mods" width="390" /></a>
-  <a href="https://github.com/CYoJkoY/PokeBonk-Desktop"><img src="./pins/PokeBonk-Desktop.svg?v=d8f9d785" alt="PokeBonk-Desktop" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/PokeBonk-Desktop"><img src="./pins/PokeBonk-Desktop.svg?v=7e9c8025" alt="PokeBonk-Desktop" width="390" /></a>
 </p>
 
 #### Extensions & developer tools
