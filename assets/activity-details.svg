@@ -1,21 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="915" height="420" viewBox="0 0 915 420" role="img" aria-labelledby="title desc">
 <title id="title">Recent commits and contribution statistics</title>
-<desc id="desc">The five latest commits by CYoJkoY in pinned public repositories, followed by 3,845 contributions from 2025-11-09 to 2026-11-13, across 212 active days.</desc>
+<desc id="desc">The five latest commits by CYoJkoY in pinned public repositories, followed by 3,936 contributions from 2025-11-09 to 2026-11-14, across 213 active days.</desc>
 <style>text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.frame{fill:#1B1C20;stroke:#3B3935}.eyebrow{fill:#A39F95;font-size:10px;letter-spacing:2px}.row-date{fill:#A39F95;font-size:11px}.row-repo{fill:#EDEAE2;font-size:12.5px;font-weight:600}a{text-decoration:none}.row-message{fill:#A39F95;font-size:11px}.stat{fill:#EDEAE2;font-family:Georgia,'Times New Roman',serif;font-size:26px}.stat-label{fill:#A39F95;font-size:9.5px;letter-spacing:1.2px}</style>
 <rect class="frame" x=".5" y=".5" width="914" height="247" rx="2"/>
 <path d="M24 12H88" stroke="#C84A3B" stroke-width="2"/>
 <text class="eyebrow" x="24" y="30">LATEST WORK</text>
 <path d="M32 54V208" stroke="#3B3935"/>
-<circle cx="32" cy="60" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="64" class="row-date">2026-11-13</text><a href="https://github.com/CYoJkoY/Yoko-ScriptCat-Scripts/commit/c415e8f"><text x="146" y="64" class="row-repo">Yoko-ScriptCat-Scripts</text></a><text x="380" y="64" class="row-message">feat(heybox-up): refresh icon with Xiaoheihe branding (#172) (#173)</text>
-<circle cx="32" cy="96" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="100" class="row-date">2026-11-13</text><a href="https://github.com/CYoJkoY/Yoko-ScriptCat-Scripts/commit/2421001"><text x="146" y="100" class="row-repo">Yoko-ScriptCat-Scripts</text></a><text x="380" y="100" class="row-message">fix(heybox-up): #170 restore published comments after reload (#171)</text>
-<circle cx="32" cy="132" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="136" class="row-date">2026-11-13</text><a href="https://github.com/CYoJkoY/ChromiumCloudSync/commit/c393148"><text x="146" y="136" class="row-repo">ChromiumCloudSync</text></a><text x="380" y="136" class="row-message">chore(manifest): Bump version to 1.14.3.</text>
-<circle cx="32" cy="168" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="172" class="row-date">2026-11-13</text><a href="https://github.com/CYoJkoY/ChromiumCloudSync/commit/19e0a79"><text x="146" y="172" class="row-repo">ChromiumCloudSync</text></a><text x="380" y="172" class="row-message">[Issue-69] fix(extension-recovery): center switches and add direct pa…</text>
-<circle cx="32" cy="204" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="208" class="row-date">2026-11-13</text><a href="https://github.com/CYoJkoY/Yoko-ScriptCat-Scripts/commit/7d3a8f3"><text x="146" y="208" class="row-repo">Yoko-ScriptCat-Scripts</text></a><text x="380" y="208" class="row-message">fix(heybox-up): #168 send complete rnd-16 comment query (#169)</text>
+<circle cx="32" cy="60" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="64" class="row-date">2026-11-14</text><a href="https://github.com/CYoJkoY/CapsLock-/commit/49e9d64"><text x="146" y="64" class="row-repo">CapsLock-</text></a><text x="380" y="64" class="row-message">[Issue-209] feat(ui): apply Wabi Press design system (#210)</text>
+<circle cx="32" cy="96" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="100" class="row-date">2026-11-14</text><a href="https://github.com/CYoJkoY/AzSkills/commit/2dd4fbf"><text x="146" y="100" class="row-repo">AzSkills</text></a><text x="380" y="100" class="row-message">[Issue-53] feat(portability): package Skills with linked support file…</text>
+<circle cx="32" cy="132" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="136" class="row-date">2026-11-13</text><a href="https://github.com/CYoJkoY/ChromiumCloudSync/commit/4d73f0d"><text x="146" y="136" class="row-repo">ChromiumCloudSync</text></a><text x="380" y="136" class="row-message">[Issue-75] refactor(full-backup): remove full extension backup and re…</text>
+<circle cx="32" cy="168" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="172" class="row-date">2026-11-13</text><a href="https://github.com/CYoJkoY/ChromiumCloudSync/commit/6ecf6b5"><text x="146" y="172" class="row-repo">ChromiumCloudSync</text></a><text x="380" y="172" class="row-message">[Issue-71] fix(ci): reconcile package removal with current main (#72)</text>
+<circle cx="32" cy="204" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="208" class="row-date">2026-11-13</text><a href="https://github.com/CYoJkoY/CapsLock-/commit/a2b3193"><text x="146" y="208" class="row-repo">CapsLock-</text></a><text x="380" y="208" class="row-message">[Issue-207] fix(window-management): refresh phrases and limit topmost…</text>
 <rect class="frame" x=".5" y="264.5" width="914" height="155" rx="2"/>
 <path d="M24 276H88" stroke="#C84A3B" stroke-width="2"/>
 <text class="eyebrow" x="24" y="296">THIS YEAR IN NUMBERS</text>
-<text x="24" y="352" class="stat">212</text><text x="24" y="378" class="stat-label">ACTIVE DAYS</text>
+<text x="24" y="352" class="stat">213</text><text x="24" y="378" class="stat-label">ACTIVE DAYS</text>
 <text x="246" y="352" class="stat">35 days</text><text x="246" y="378" class="stat-label">LONGEST STREAK</text>
 <text x="468" y="352" class="stat">488</text><text x="468" y="378" class="stat-label">PEAK CONTRIBUTIONS · Sep 6</text>
-<text x="690" y="352" class="stat">18.1</text><text x="690" y="378" class="stat-label">CONTRIB. / ACTIVE DAY</text>
+<text x="690" y="352" class="stat">18.5</text><text x="690" y="378" class="stat-label">CONTRIB. / ACTIVE DAY</text>
 </svg>
