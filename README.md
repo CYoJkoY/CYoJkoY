@@ -32,7 +32,6 @@ I make Windows utilities, browser extensions, and game mods. This is a selection
   <a href="https://github.com/CYoJkoY/Yoko-MoreStatsContainer"><img src="./pins/Yoko-MoreStatsContainer.svg?v=f0f948fa" alt="Yoko-MoreStatsContainer" width="390" /></a>
   <a href="https://github.com/CYoJkoY/YokoAndCave-Fantasy"><img src="./pins/YokoAndCave-Fantasy.svg?v=383d64f5" alt="YokoAndCave-Fantasy" width="390" /></a>
   <a href="https://github.com/CYoJkoY/Yoko-DebugMenu"><img src="./pins/Yoko-DebugMenu.svg?v=a32cbee5" alt="Yoko-DebugMenu" width="390" /></a>
-  <a href="https://github.com/CYoJkoY/Yoko-Optimize"><img src="./pins/Yoko-Optimize.svg?v=55aca7b9" alt="Yoko-Optimize" width="390" /></a>
 </p>
 
 #### References
