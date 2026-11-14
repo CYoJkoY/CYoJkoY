@@ -13,6 +13,7 @@ I make Windows utilities, browser extensions, and game mods. This is a selection
   <a href="https://github.com/CYoJkoY/CapsLock-"><img src="./pins/CapsLock-.svg?v=4ff627a5" alt="CapsLock-" width="390" /></a>
   <a href="https://github.com/CYoJkoY/extras-"><img src="./pins/extras-.svg?v=73674758" alt="extras-" width="390" /></a>
   <a href="https://github.com/CYoJkoY/Yoko-Windhawk-Mods"><img src="./pins/Yoko-Windhawk-Mods.svg?v=e85aeade" alt="Yoko-Windhawk-Mods" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/PokeBonk-Desktop"><img src="./pins/PokeBonk-Desktop.svg?v=d8f9d785" alt="PokeBonk-Desktop" width="390" /></a>
 </p>
 
 #### Extensions & developer tools
@@ -31,6 +32,7 @@ I make Windows utilities, browser extensions, and game mods. This is a selection
   <a href="https://github.com/CYoJkoY/Yoko-MoreStatsContainer"><img src="./pins/Yoko-MoreStatsContainer.svg?v=f0f948fa" alt="Yoko-MoreStatsContainer" width="390" /></a>
   <a href="https://github.com/CYoJkoY/YokoAndCave-Fantasy"><img src="./pins/YokoAndCave-Fantasy.svg?v=383d64f5" alt="YokoAndCave-Fantasy" width="390" /></a>
   <a href="https://github.com/CYoJkoY/Yoko-DebugMenu"><img src="./pins/Yoko-DebugMenu.svg?v=a32cbee5" alt="Yoko-DebugMenu" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Yoko-Optimize"><img src="./pins/Yoko-Optimize.svg?v=55aca7b9" alt="Yoko-Optimize" width="390" /></a>
 </p>
 
 #### References

@@ -175,9 +175,7 @@ async function fetchAllRepos() {
   }
   return repos.filter(
     (repo) =>
-      !repo.fork &&
       !repo.private &&
-      !repo.archived &&
       repo.name.toLowerCase() !== USERNAME.toLowerCase()
   );
 }
@@ -191,6 +189,14 @@ async function run() {
 
     const rawConfig = await fs.readFile(CONFIG_PATH, 'utf-8');
     const config = JSON.parse(rawConfig);
+    // Explicit pins include public forks and archived repositories. Resolve all
+    // configured names before writing so a typo cannot silently remove cards.
+    const missingRepos = (config.categories || []).flatMap((cat) =>
+      (cat.repos || []).map((entry) => typeof entry === 'string' ? entry : entry.name)
+    ).filter((name) => !repoMap.has(name.toLowerCase()));
+    if (missingRepos.length > 0) {
+      throw new Error(`Configured repositories are not available as public repositories owned by ${USERNAME}: ${missingRepos.join(', ')}`);
+    }
 
     let generatedMarkdown = '\n';
     const generatedFiles = new Set();
