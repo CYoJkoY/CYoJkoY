@@ -1,20 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="915" height="420" viewBox="0 0 915 420" role="img" aria-labelledby="title desc">
 <title id="title">Recent commits and contribution statistics</title>
-<desc id="desc">The five latest commits by CYoJkoY in pinned public repositories, followed by 3,961 contributions from 2025-11-16 to 2026-11-15, across 213 active days.</desc>
+<desc id="desc">The five latest commits by CYoJkoY in pinned public repositories, followed by 3,990 contributions from 2025-11-16 to 2026-11-16, across 214 active days.</desc>
 <style>text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.frame{fill:#1B1C20;stroke:#3B3935}.eyebrow{fill:#A39F95;font-size:10px;letter-spacing:2px}.row-date{fill:#A39F95;font-size:11px}.row-repo{fill:#EDEAE2;font-size:12.5px;font-weight:600}a{text-decoration:none}.row-message{fill:#A39F95;font-size:11px}.stat{fill:#EDEAE2;font-family:Georgia,'Times New Roman',serif;font-size:26px}.stat-label{fill:#A39F95;font-size:9.5px;letter-spacing:1.2px}</style>
 <rect class="frame" x=".5" y=".5" width="914" height="247" rx="2"/>
 <path d="M24 12H88" stroke="#C84A3B" stroke-width="2"/>
 <text class="eyebrow" x="24" y="30">LATEST WORK</text>
 <path d="M32 54V208" stroke="#3B3935"/>
-<circle cx="32" cy="60" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="64" class="row-date">2026-11-15</text><a href="https://github.com/CYoJkoY/AzSkills/commit/7521d34"><text x="146" y="64" class="row-repo">AzSkills</text></a><text x="380" y="64" class="row-message">feat(az-clean-code): automate structural checks (#61) (#62)</text>
-<circle cx="32" cy="96" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="100" class="row-date">2026-11-14</text><a href="https://github.com/CYoJkoY/AzSkills/commit/f0ed38c"><text x="146" y="100" class="row-repo">AzSkills</text></a><text x="380" y="100" class="row-message">feat(plugin): add GPT with Taste hooks (#59) (#60)</text>
-<circle cx="32" cy="132" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="136" class="row-date">2026-11-14</text><a href="https://github.com/CYoJkoY/AzSkills/commit/58a9000"><text x="146" y="136" class="row-repo">AzSkills</text></a><text x="380" y="136" class="row-message">feat(plugin): add icon and prompt routing hook (#57) (#58)</text>
-<circle cx="32" cy="168" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="172" class="row-date">2026-11-14</text><a href="https://github.com/CYoJkoY/AzSkills/commit/b3954e1"><text x="146" y="172" class="row-repo">AzSkills</text></a><text x="380" y="172" class="row-message">fix(plugin): Fix plugin import failure.</text>
-<circle cx="32" cy="204" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="208" class="row-date">2026-11-14</text><a href="https://github.com/CYoJkoY/AzSkills/commit/afb3306"><text x="146" y="208" class="row-repo">AzSkills</text></a><text x="380" y="208" class="row-message">feat(codex): Convert the implementation into a Codex plugin.</text>
+<circle cx="32" cy="60" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="64" class="row-date">2026-11-16</text><a href="https://github.com/CYoJkoY/AzSkills/commit/4e85ed7"><text x="146" y="64" class="row-repo">AzSkills</text></a><text x="380" y="64" class="row-message">[Improvement] godot-3-dev: enforce the full checker before reconstruc…</text>
+<circle cx="32" cy="96" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="100" class="row-date">2026-11-15</text><a href="https://github.com/CYoJkoY/AzSkills/commit/53e7608"><text x="146" y="100" class="row-repo">AzSkills</text></a><text x="380" y="100" class="row-message">[Improvement] godot-3-dev: mechanically enforce Godot 3.6 API with a…</text>
+<circle cx="32" cy="132" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="136" class="row-date">2026-11-15</text><a href="https://github.com/CYoJkoY/AzSkills/commit/854b037"><text x="146" y="136" class="row-repo">AzSkills</text></a><text x="380" y="136" class="row-message">feat(godot-3-dev): add a Godot 3.6 development Skill (#67) (#68)</text>
+<circle cx="32" cy="168" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="172" class="row-date">2026-11-15</text><a href="https://github.com/CYoJkoY/Yoko-YzTato/commit/d333145"><text x="146" y="172" class="row-repo">Yoko-YzTato</text></a><text x="380" y="172" class="row-message">fix(stitch-freak): 效果 8 恢复父效果，仅新增 8-3 子效果承载线团召唤 (#5)</text>
+<circle cx="32" cy="204" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="208" class="row-date">2026-11-15</text><a href="https://github.com/CYoJkoY/extras-/commit/d35866f"><text x="146" y="208" class="row-repo">extras-</text></a><text x="380" y="208" class="row-message">Add Magpie.json for AI coding agent configuration</text>
 <rect class="frame" x=".5" y="264.5" width="914" height="155" rx="2"/>
 <path d="M24 276H88" stroke="#C84A3B" stroke-width="2"/>
 <text class="eyebrow" x="24" y="296">THIS YEAR IN NUMBERS</text>
-<text x="24" y="352" class="stat">213</text><text x="24" y="378" class="stat-label">ACTIVE DAYS</text>
+<text x="24" y="352" class="stat">214</text><text x="24" y="378" class="stat-label">ACTIVE DAYS</text>
 <text x="246" y="352" class="stat">35 days</text><text x="246" y="378" class="stat-label">LONGEST STREAK</text>
 <text x="468" y="352" class="stat">488</text><text x="468" y="378" class="stat-label">PEAK CONTRIBUTIONS · Sep 6</text>
 <text x="690" y="352" class="stat">18.6</text><text x="690" y="378" class="stat-label">CONTRIB. / ACTIVE DAY</text>
