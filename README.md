@@ -37,7 +37,7 @@ I make Windows utilities, browser extensions, and game mods. This is a selection
 #### References
 
 <p align="left">
-  <a href="https://github.com/CYoJkoY/AzSkills"><img src="./pins/AzSkills.svg?v=5e1cce0d" alt="AzSkills" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/AzSkills"><img src="./pins/AzSkills.svg?v=95c4ee67" alt="AzSkills" width="390" /></a>
 </p>
 
 <!-- REPO_LIST:END -->
