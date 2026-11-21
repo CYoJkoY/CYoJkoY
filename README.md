@@ -14,6 +14,7 @@ I make Windows utilities, browser extensions, and game mods. This is a selection
   <a href="https://github.com/CYoJkoY/extras-"><img src="./pins/extras-.svg?v=73674758" alt="extras-" width="390" /></a>
   <a href="https://github.com/CYoJkoY/Yoko-Windhawk-Mods"><img src="./pins/Yoko-Windhawk-Mods.svg?v=e85aeade" alt="Yoko-Windhawk-Mods" width="390" /></a>
   <a href="https://github.com/CYoJkoY/PokeBonk-Desktop"><img src="./pins/PokeBonk-Desktop.svg?v=29c9ab39" alt="PokeBonk-Desktop" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/psd-preview"><img src="./pins/psd-preview.svg?v=121138a9" alt="psd-preview" width="390" /></a>
 </p>
 
 #### Extensions & developer tools
