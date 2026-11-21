@@ -18,6 +18,10 @@
         {
           "name": "PokeBonk-Desktop",
           "desc": "Descargas oficiales de la app de escritorio de PokéBonk"
+        },
+        {
+          "name": "psd-preview",
+          "desc": "psd preview extension for windows 11 developed by zig"
         }
       ]
     },
