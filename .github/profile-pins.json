@@ -20,6 +20,10 @@
           "desc": "Descargas oficiales de la app de escritorio de PokéBonk"
         },
         {
+          "name": "DaFeiYu-Max",
+          "desc": "Better Deepseek shape pet software, adapted to Windows+macOS+Linux, refactored using TypeScript and Zig, with some built-in tools for online social networking"
+        },
+        {
           "name": "psd-preview",
           "desc": "psd preview extension for windows 11 developed by zig"
         }
@@ -64,6 +68,10 @@
         {
           "name": "Yoko-DebugMenu",
           "desc": "Developer diagnostic overlay and runtime inspection menu."
+        },
+        {
+          "name": "TheMaze",
+          "desc": "The Maze (中译: 3D 鬼打墙), a small game that was re-engraved in Zig language."
         }
       ]
     },
