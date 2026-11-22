@@ -1,21 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="915" height="420" viewBox="0 0 915 420" role="img" aria-labelledby="title desc">
 <title id="title">Recent commits and contribution statistics</title>
-<desc id="desc">The five latest commits by CYoJkoY in pinned public repositories, followed by 4,272 contributions from 2025-11-16 to 2026-11-21, across 219 active days.</desc>
+<desc id="desc">The five latest commits by CYoJkoY in pinned public repositories, followed by 4,312 contributions from 2025-11-23 to 2026-11-22, across 219 active days.</desc>
 <style>text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.frame{fill:#1B1C20;stroke:#3B3935}.eyebrow{fill:#A39F95;font-size:10px;letter-spacing:2px}.row-date{fill:#A39F95;font-size:11px}.row-repo{fill:#EDEAE2;font-size:12.5px;font-weight:600}a{text-decoration:none}.row-message{fill:#A39F95;font-size:11px}.stat{fill:#EDEAE2;font-family:Georgia,'Times New Roman',serif;font-size:26px}.stat-label{fill:#A39F95;font-size:9.5px;letter-spacing:1.2px}</style>
 <rect class="frame" x=".5" y=".5" width="914" height="247" rx="2"/>
 <path d="M24 12H88" stroke="#C84A3B" stroke-width="2"/>
 <text class="eyebrow" x="24" y="30">LATEST WORK</text>
 <path d="M32 54V208" stroke="#3B3935"/>
-<circle cx="32" cy="60" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="64" class="row-date">2026-11-21</text><a href="https://github.com/CYoJkoY/AzSkills/commit/db7855e"><text x="146" y="64" class="row-repo">AzSkills</text></a><text x="380" y="64" class="row-message">feat(marketplace): publish the built plugin catalog (#88)</text>
-<circle cx="32" cy="96" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="100" class="row-date">2026-11-21</text><a href="https://github.com/CYoJkoY/AzSkills/commit/fca69f9"><text x="146" y="100" class="row-repo">AzSkills</text></a><text x="380" y="100" class="row-message">feat(catalog): split azskills into independent plugins (#85) (#86)</text>
-<circle cx="32" cy="132" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="136" class="row-date">2026-11-21</text><a href="https://github.com/CYoJkoY/Yoko-Windhawk-Mods/commit/c836c62"><text x="146" y="136" class="row-repo">Yoko-Windhawk-Mods</text></a><text x="380" y="136" class="row-message">fix(aleph-canvas): correct stack sizing, default hotkey and preview f…</text>
-<circle cx="32" cy="168" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="172" class="row-date">2026-11-21</text><a href="https://github.com/CYoJkoY/psd-preview/commit/03a8482"><text x="146" y="172" class="row-repo">psd-preview</text></a><text x="380" y="172" class="row-message">chore(root): update ignore rules and add PSD preview icon</text>
-<circle cx="32" cy="204" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="208" class="row-date">2026-11-21</text><a href="https://github.com/CYoJkoY/psd-preview/commit/e50ea22"><text x="146" y="208" class="row-repo">psd-preview</text></a><text x="380" y="208" class="row-message">docs(readme): add project icon and show it in the README (#13)</text>
+<circle cx="32" cy="60" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="64" class="row-date">2026-11-22</text><a href="https://github.com/CYoJkoY/AzSkills/commit/da06fc5"><text x="146" y="64" class="row-repo">AzSkills</text></a><text x="380" y="64" class="row-message">feat: fold godot-3-dev into engineering, retire empty-reply, harden t…</text>
+<circle cx="32" cy="96" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="100" class="row-date">2026-11-22</text><a href="https://github.com/CYoJkoY/AzSkills/commit/686d85b"><text x="146" y="100" class="row-repo">AzSkills</text></a><text x="380" y="100" class="row-message">feat(delivery-loop): add gated issue-to-merge plugin (#93) (#94)</text>
+<circle cx="32" cy="132" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="136" class="row-date">2026-11-22</text><a href="https://github.com/CYoJkoY/extras-/commit/0322d84"><text x="146" y="136" class="row-repo">extras-</text></a><text x="380" y="136" class="row-message">feat(apkstart): adapt manifest for Scoop lifecycle</text>
+<circle cx="32" cy="168" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="172" class="row-date">2026-11-22</text><a href="https://github.com/CYoJkoY/AzSkills/commit/ac53c50"><text x="146" y="172" class="row-repo">AzSkills</text></a><text x="380" y="172" class="row-message">refactor(marketplace)!: group related workflows into 10 plugins (#92)…</text>
+<circle cx="32" cy="204" r="2.5" fill="#C84A3B" fill-opacity=".85"/><text x="48" y="208" class="row-date">2026-11-22</text><a href="https://github.com/CYoJkoY/Yoko-ScriptCat-Scripts/commit/879d873"><text x="146" y="208" class="row-repo">Yoko-ScriptCat-Scripts</text></a><text x="380" y="208" class="row-message">feat(sheets-theme-toggle): theme grid canvas in dark mode (#248)</text>
 <rect class="frame" x=".5" y="264.5" width="914" height="155" rx="2"/>
 <path d="M24 276H88" stroke="#C84A3B" stroke-width="2"/>
 <text class="eyebrow" x="24" y="296">THIS YEAR IN NUMBERS</text>
 <text x="24" y="352" class="stat">219</text><text x="24" y="378" class="stat-label">ACTIVE DAYS</text>
-<text x="246" y="352" class="stat">40 days</text><text x="246" y="378" class="stat-label">LONGEST STREAK</text>
+<text x="246" y="352" class="stat">41 days</text><text x="246" y="378" class="stat-label">LONGEST STREAK</text>
 <text x="468" y="352" class="stat">488</text><text x="468" y="378" class="stat-label">PEAK CONTRIBUTIONS · Sep 6</text>
-<text x="690" y="352" class="stat">19.5</text><text x="690" y="378" class="stat-label">CONTRIB. / ACTIVE DAY</text>
+<text x="690" y="352" class="stat">19.7</text><text x="690" y="378" class="stat-label">CONTRIB. / ACTIVE DAY</text>
 </svg>
