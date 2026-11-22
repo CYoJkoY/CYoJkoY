@@ -14,7 +14,7 @@
 
   <!-- Description -->
   <text x="16" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#A39F95">Better Deepseek shape pet software, adapted</text>
-  <text x="16" y="68" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#A39F95">to Windows+macOS+Linux, refactored using...</text>
+  <text x="16" y="68" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#A39F95">to Windows + macOS, refactored using...</text>
 
   <!-- Footer Items Row -->
   <g transform="translate(0, 82)">
