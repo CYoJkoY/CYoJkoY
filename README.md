@@ -14,7 +14,7 @@ I make Windows utilities, browser extensions, and game mods. This is a selection
   <a href="https://github.com/CYoJkoY/extras-"><img src="./pins/extras-.svg?v=73674758" alt="extras-" width="390" /></a>
   <a href="https://github.com/CYoJkoY/Yoko-Windhawk-Mods"><img src="./pins/Yoko-Windhawk-Mods.svg?v=e85aeade" alt="Yoko-Windhawk-Mods" width="390" /></a>
   <a href="https://github.com/CYoJkoY/PokeBonk-Desktop"><img src="./pins/PokeBonk-Desktop.svg?v=29c9ab39" alt="PokeBonk-Desktop" width="390" /></a>
-  <a href="https://github.com/CYoJkoY/DaFeiYu-Max"><img src="./pins/DaFeiYu-Max.svg?v=43ad1d4a" alt="DaFeiYu-Max" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/DaFeiYu-Max"><img src="./pins/DaFeiYu-Max.svg?v=433417ab" alt="DaFeiYu-Max" width="390" /></a>
   <a href="https://github.com/CYoJkoY/psd-preview"><img src="./pins/psd-preview.svg?v=d4ce30b0" alt="psd-preview" width="390" /></a>
 </p>
 
@@ -22,7 +22,7 @@ I make Windows utilities, browser extensions, and game mods. This is a selection
 
 <p align="left">
   <a href="https://github.com/CYoJkoY/ChromiumCloudSync"><img src="./pins/ChromiumCloudSync.svg?v=4f8dfec3" alt="ChromiumCloudSync" width="390" /></a>
-  <a href="https://github.com/CYoJkoY/Neo-Godot-Tools"><img src="./pins/Neo-Godot-Tools.svg?v=1a540336" alt="Neo-Godot-Tools" width="390" /></a>
+  <a href="https://github.com/CYoJkoY/Neo-Godot-Tools"><img src="./pins/Neo-Godot-Tools.svg?v=d831f851" alt="Neo-Godot-Tools" width="390" /></a>
   <a href="https://github.com/CYoJkoY/Yoko-ScriptCat-Scripts"><img src="./pins/Yoko-ScriptCat-Scripts.svg?v=e21f6ab8" alt="Yoko-ScriptCat-Scripts" width="390" /></a>
 </p>
 
