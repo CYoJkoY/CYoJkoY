@@ -68,10 +68,6 @@
         {
           "name": "Yoko-DebugMenu",
           "desc": "Developer diagnostic overlay and runtime inspection menu."
-        },
-        {
-          "name": "TheMaze",
-          "desc": "The Maze (中译: 3D 鬼打墙), a small game that was re-engraved in Zig language."
         }
       ]
     },
