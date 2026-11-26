@@ -90,6 +90,38 @@ test('fetches owner-authored commits from each repository and keeps the newest f
   }
 });
 
+test('fetches commits from an external pinned repository and links to its owner', async () => {
+  const seen = [];
+  const server = createServer((request, response) => {
+    const url = new URL(request.url, 'http://localhost');
+    seen.push(url);
+    response.setHeader('Content-Type', 'application/json');
+    response.end(JSON.stringify([makeCommit('ExternalRepo', 7)]));
+  });
+  try {
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    const commits = await fetchRecentCommits(['ExternalOwner/ExternalRepo'], {
+      owner: 'CYoJkoY', apiUrl: 'http://127.0.0.1:' + server.address().port
+    });
+    assert.equal(seen.length, 1);
+    assert.equal(seen[0].pathname, '/repos/ExternalOwner/ExternalRepo/commits');
+    assert.equal(seen[0].searchParams.get('author'), 'CYoJkoY');
+    assert.deepEqual(commits[0], {
+      repository: 'ExternalRepo', owner: 'ExternalOwner', message: 'feat: add feature',
+      date: '2026-01-07T12:00:00Z', sha: 'abcdef1'
+    });
+    const svg = renderActivityDetails(summarizeCalendar(makeCalendar()), commits);
+    assert.match(svg, /href="https:\/\/github\.com\/ExternalOwner\/ExternalRepo\/commit\/abcdef1"/);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('rejects malformed pinned repository slugs before making a request', async () => {
+  await assert.rejects(fetchRecentCommits(['owner/repository/extra'], { apiUrl: 'http://127.0.0.1:1' }),
+    /must be a bare name or "owner\/name"/);
+});
+
 test('the README publishes the generated detail asset', async () => {
   const [readme, svg] = await Promise.all([
     readFile(new URL('../../README.md', import.meta.url), 'utf8'),

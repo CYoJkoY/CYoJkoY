@@ -59,18 +59,23 @@ export function summarizeCalendar(svg) {
   };
 }
 
-export function validateCommits(commits) {
+// Pinned repositories may live under another account, so each record keeps the
+// owner next to the repository name. A bare record falls back to the profile
+// owner for backward compatibility.
+export function validateCommits(commits, owner = OWNER) {
   if (!Array.isArray(commits)) throw new Error('GitHub commits response must be an array.');
   return commits.map((commit) => {
     const repository = commit.repository;
+    const repositoryOwner = commit.owner || owner;
     const message = commit.commit?.message?.split('\n')[0];
     const date = commit.commit?.committer?.date ?? commit.commit?.author?.date;
     if (typeof repository !== 'string' || !/^[A-Za-z0-9_.-]+$/.test(repository) ||
+        typeof repositoryOwner !== 'string' || !/^[A-Za-z0-9_.-]+$/.test(repositoryOwner) ||
         typeof message !== 'string' || typeof date !== 'string' ||
         !Number.isFinite(Date.parse(date)) || typeof commit.sha !== 'string' || !/^[a-f0-9]{7,40}$/i.test(commit.sha)) {
-      throw new Error('GitHub returned an invalid commit record for ' + String(repository) + '.');
+      throw new Error('GitHub returned an invalid commit record for ' + String(repositoryOwner) + '/' + String(repository) + '.');
     }
-    return { repository, message: message || '(no commit message)', date, sha: commit.sha.slice(0, 7) };
+    return { repository, owner: repositoryOwner, message: message || '(no commit message)', date, sha: commit.sha.slice(0, 7) };
   }).sort((left, right) => Date.parse(right.date) - Date.parse(left.date));
 }
 
@@ -83,7 +88,7 @@ export function renderActivityDetails(calendar, commits) {
   const rows = commits.slice(0, 5);
   const rowMarkup = rows.map((commit, index) => {
     const y = 64 + index * 36;
-    const repoUrl = 'https://github.com/' + encodeURIComponent(OWNER) + '/' + encodeURIComponent(commit.repository);
+    const repoUrl = 'https://github.com/' + encodeURIComponent(commit.owner || OWNER) + '/' + encodeURIComponent(commit.repository);
     const commitUrl = repoUrl + '/commit/' + encodeURIComponent(commit.sha);
     return '<circle cx="32" cy="' + (y - 4) + '" r="2.5" fill="#C84A3B" fill-opacity=".85"/>' +
       '<text x="48" y="' + y + '" class="row-date">' + escapeXml(commit.date.slice(0, 10)) + '</text>' +
@@ -133,15 +138,23 @@ async function requestJson(url, token) {
 }
 
 export async function fetchRecentCommits(repositories, { owner = OWNER, token = '', apiUrl = 'https://api.github.com' } = {}) {
-  const batches = await Promise.all(repositories.map(async (repository) => {
-    const url = new URL('/repos/' + encodeURIComponent(owner) + '/' + encodeURIComponent(repository) + '/commits', apiUrl);
+  // A pin is either a bare repository name or an "owner/name" slug, so external
+  // collaboration and organization repositories keep working here as well.
+  const targets = repositories.map((repository) => {
+    const parts = String(repository).split('/').map((part) => part.trim());
+    if (parts.length === 1 && parts[0]) return { owner, repository: parts[0] };
+    if (parts.length === 2 && parts[0] && parts[1]) return { owner: parts[0], repository: parts[1] };
+    throw new Error('Pinned repository must be a bare name or "owner/name": ' + String(repository) + '.');
+  });
+  const batches = await Promise.all(targets.map(async ({ owner: repositoryOwner, repository }) => {
+    const url = new URL('/repos/' + encodeURIComponent(repositoryOwner) + '/' + encodeURIComponent(repository) + '/commits', apiUrl);
     url.searchParams.set('author', owner);
     url.searchParams.set('per_page', '10');
     const payload = await requestJson(url, token);
-    if (!Array.isArray(payload)) throw new Error('GitHub commits response must be an array for ' + repository + '.');
-    return payload.map((commit) => ({ ...commit, repository }));
+    if (!Array.isArray(payload)) throw new Error('GitHub commits response must be an array for ' + repositoryOwner + '/' + repository + '.');
+    return payload.map((commit) => ({ ...commit, repository, owner: repositoryOwner }));
   }));
-  return validateCommits(batches.flat()).slice(0, 5);
+  return validateCommits(batches.flat(), owner).slice(0, 5);
 }
 
 export async function generate() {

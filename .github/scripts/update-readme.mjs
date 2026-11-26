@@ -2,11 +2,16 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
+// Renders the pinned project cards in README.md from .github/profile-pins.json.
+// A pin may be a bare repository name or an "owner/name" slug, so collaborations
+// and organization projects can be listed next to the repositories this profile
+// owns. See .github/profile-pins.md for the configuration contract.
 const USERNAME = process.env.GITHUB_REPOSITORY_OWNER || 'CYoJkoY';
 const TOKEN = process.env.GITHUB_TOKEN || '';
 const README_PATH = path.resolve('README.md');
 const CONFIG_PATH = path.resolve('.github/profile-pins.json');
 const PINS_DIR = path.resolve('pins');
+const API_ROOT = 'https://api.github.com';
 
 const START_MARKER = '<!-- REPO_LIST:START -->';
 const END_MARKER = '<!-- REPO_LIST:END -->';
@@ -153,7 +158,7 @@ function generateCardSvg(repo) {
 </svg>`;
 }
 
-async function fetchAllRepos() {
+function apiHeaders() {
   const headers = {
     Accept: 'application/vnd.github+json',
     'User-Agent': 'node-fetch',
@@ -161,70 +166,199 @@ async function fetchAllRepos() {
   if (TOKEN) {
     headers.Authorization = `Bearer ${TOKEN}`;
   }
+  return headers;
+}
 
+function ownerLogin(repo) {
+  return (repo.owner && repo.owner.login) || USERNAME;
+}
+
+function repoSlug(repo) {
+  return `${ownerLogin(repo)}/${repo.name}`;
+}
+
+function isOwned(repo) {
+  return ownerLogin(repo).toLowerCase() === USERNAME.toLowerCase();
+}
+
+function isProfileRepo(repo) {
+  return isOwned(repo) && repo.name.toLowerCase() === USERNAME.toLowerCase();
+}
+
+// Pins share one flat directory, so a repository owned by someone else keeps its
+// owner in the file name instead of clashing with an owned repository of the same
+// name.
+function pinFileName(repo) {
+  return isOwned(repo) ? `${repo.name}.svg` : `${ownerLogin(repo)}--${repo.name}.svg`;
+}
+
+async function fetchRepoPages(buildUrl, label) {
   const repos = [];
   for (let page = 1; ; page += 1) {
-    const url = `https://api.github.com/users/${USERNAME}/repos?per_page=100&type=owner&sort=full_name&page=${page}`;
-    const response = await fetch(url, { headers });
+    const response = await fetch(buildUrl(page), { headers: apiHeaders() });
     if (!response.ok) {
-      throw new Error(`GitHub API request failed: ${response.status} ${response.statusText}`);
+      throw new Error(`GitHub API request failed for ${label}: ${response.status} ${response.statusText}`);
     }
     const batch = await response.json();
     repos.push(...batch);
     if (batch.length < 100) break;
   }
-  return repos.filter(
-    (repo) =>
-      !repo.private &&
-      repo.name.toLowerCase() !== USERNAME.toLowerCase()
+  return repos;
+}
+
+// `type=owner` only lists repositories the profile owner created, which is why
+// collaborations and organization projects used to be impossible to pin.
+// `type=member` lists the repositories reachable through collaboration and
+// organization membership, and it is public data, so the default workflow token
+// can read it.
+async function fetchProfileRepos() {
+  const owned = await fetchRepoPages(
+    (page) => `${API_ROOT}/users/${USERNAME}/repos?per_page=100&type=owner&sort=full_name&page=${page}`,
+    `repositories owned by ${USERNAME}`
   );
+
+  let shared = [];
+  try {
+    shared = await fetchRepoPages(
+      (page) => `${API_ROOT}/users/${USERNAME}/repos?per_page=100&type=member&sort=full_name&page=${page}`,
+      `collaboration and organization repositories of ${USERNAME}`
+    );
+  } catch (err) {
+    console.warn(`[Warn] ${err.message}. Only owned repositories are discovered; pin others as "owner/name".`);
+  }
+
+  const repos = new Map();
+  for (const repo of [...owned, ...shared]) {
+    repos.set(repoSlug(repo).toLowerCase(), repo);
+  }
+  return [...repos.values()];
+}
+
+async function fetchConfiguredRepo(slug) {
+  const response = await fetch(`${API_ROOT}/repos/${slug}`, { headers: apiHeaders() });
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    throw new Error(`GitHub API request failed for ${slug}: ${response.status} ${response.statusText}`);
+  }
+  return response.json();
+}
+
+function indexRepos(repos) {
+  const bySlug = new Map();
+  const byName = new Map();
+  for (const repo of repos) {
+    bySlug.set(repoSlug(repo).toLowerCase(), repo);
+    const key = repo.name.toLowerCase();
+    byName.set(key, [...(byName.get(key) || []), repo]);
+  }
+  return { bySlug, byName };
+}
+
+function pinnedSpec(entry) {
+  if (typeof entry === 'string') return entry.trim();
+  if (entry && typeof entry.name === 'string') return entry.name.trim();
+  return '';
+}
+
+function unpinnableReason(repo) {
+  if (repo.private) return 'private';
+  if (isProfileRepo(repo)) return 'the profile repository itself';
+  return null;
+}
+
+async function resolvePinnedRepo(spec, index) {
+  if (spec.includes('/')) {
+    const [owner, name, ...rest] = spec.split('/').map((part) => part.trim());
+    if (!owner || !name || rest.length > 0) {
+      return { spec, reason: 'invalid, expected "owner/name"' };
+    }
+    const slug = `${owner}/${name}`;
+    let repo = index.bySlug.get(slug.toLowerCase());
+    if (!repo) {
+      repo = await fetchConfiguredRepo(slug);
+    }
+    const reason = repo ? unpinnableReason(repo) : 'not found or not reachable';
+    return reason ? { spec, reason } : { spec, repo };
+  }
+
+  const matches = index.byName.get(spec.toLowerCase()) || [];
+  const pinnable = matches.filter((repo) => !unpinnableReason(repo));
+  const owned = pinnable.find(isOwned);
+  if (owned) {
+    return { spec, repo: owned };
+  }
+  if (pinnable.length === 1) {
+    return { spec, repo: pinnable[0] };
+  }
+  if (pinnable.length > 1) {
+    return { spec, reason: `ambiguous, pin it as "owner/name" (${pinnable.map(repoSlug).join(' or ')})` };
+  }
+  if (matches.length > 0) {
+    return { spec, reason: unpinnableReason(matches[0]) };
+  }
+  return { spec, reason: `not found in the public repositories of ${USERNAME}, pin it as "owner/name"` };
 }
 
 async function run() {
   try {
     await fs.mkdir(PINS_DIR, { recursive: true });
 
-    const repos = await fetchAllRepos();
-    const repoMap = new Map(repos.map((r) => [r.name.toLowerCase(), r]));
+    const index = indexRepos(await fetchProfileRepos());
 
     const rawConfig = await fs.readFile(CONFIG_PATH, 'utf-8');
     const config = JSON.parse(rawConfig);
-    // Explicit pins include public forks and archived repositories. Resolve all
-    // configured names before writing so a typo cannot silently remove cards.
-    const missingRepos = (config.categories || []).flatMap((cat) =>
-      (cat.repos || []).map((entry) => typeof entry === 'string' ? entry : entry.name)
-    ).filter((name) => !repoMap.has(name.toLowerCase()));
-    if (missingRepos.length > 0) {
-      throw new Error(`Configured repositories are not available as public repositories owned by ${USERNAME}: ${missingRepos.join(', ')}`);
+    const categories = Array.isArray(config.categories) ? config.categories : [];
+
+    // Explicit pins include public forks, archived repositories, and repositories
+    // owned by other accounts. Resolve all configured names before writing so a
+    // typo cannot silently remove cards.
+    const resolutions = new Map();
+    const problems = [];
+    for (const cat of categories) {
+      for (const entry of cat.repos || []) {
+        const spec = pinnedSpec(entry);
+        if (!spec) {
+          problems.push('an entry without a repository name');
+          continue;
+        }
+        const key = spec.toLowerCase();
+        if (!resolutions.has(key)) {
+          resolutions.set(key, await resolvePinnedRepo(spec, index));
+        }
+        const resolution = resolutions.get(key);
+        if (!resolution.repo) {
+          problems.push(`${resolution.spec} (${resolution.reason})`);
+        }
+      }
+    }
+    if (problems.length > 0) {
+      throw new Error(`Configured repositories are not available as public repositories: ${problems.join(', ')}`);
     }
 
     let generatedMarkdown = '\n';
     const generatedFiles = new Set();
 
-    for (const cat of config.categories || []) {
+    for (const cat of categories) {
       const catRepos = [];
 
       for (const entry of cat.repos || []) {
-        const repoName = typeof entry === 'string' ? entry : entry.name;
-        const customDesc = typeof entry === 'object' ? entry.desc : null;
-        const matched = repoMap.get(repoName.toLowerCase());
+        const customDesc = typeof entry === 'object' && entry !== null ? entry.desc : null;
+        const matched = resolutions.get(pinnedSpec(entry).toLowerCase()).repo;
+        const repoData = { ...matched, customDesc };
+        const svgContent = generateCardSvg(repoData);
 
-        if (matched) {
-          const repoData = { ...matched, customDesc };
-          const svgContent = generateCardSvg(repoData);
+        const hash = crypto.createHash('md5').update(svgContent).digest('hex').slice(0, 8);
+        const fileName = pinFileName(matched);
+        await fs.writeFile(path.join(PINS_DIR, fileName), svgContent, 'utf-8');
+        generatedFiles.add(fileName);
 
-          const hash = crypto.createHash('md5').update(svgContent).digest('hex').slice(0, 8);
-          await fs.writeFile(path.join(PINS_DIR, `${matched.name}.svg`), svgContent, 'utf-8');
-          generatedFiles.add(`${matched.name}.svg`);
-
-          catRepos.push({ ...repoData, hash });
-        }
+        catRepos.push({ ...repoData, hash, fileName });
       }
 
       if (catRepos.length > 0) {
         generatedMarkdown += `#### ${cat.name}\n\n<p align="left">\n`;
         for (const item of catRepos) {
-          generatedMarkdown += `  <a href="${item.html_url}"><img src="./pins/${item.name}.svg?v=${item.hash}" alt="${item.name}" width="390" /></a>\n`;
+          generatedMarkdown += `  <a href="${item.html_url}"><img src="./pins/${item.fileName}?v=${item.hash}" alt="${item.name}" width="390" /></a>\n`;
         }
         generatedMarkdown += `</p>\n\n`;
       }
